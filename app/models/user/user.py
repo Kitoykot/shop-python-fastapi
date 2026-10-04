@@ -8,6 +8,7 @@ from app.models.base import Base
 
 if TYPE_CHECKING:
     from app.models.cart.cart import Cart
+    from app.models.order.order import Order
 
 
 class User(Base):
@@ -33,7 +34,5 @@ class User(Base):
         server_default='user',
     )
 
-    cart: Mapped['Cart | None'] = relationship(
-        'Cart',
-        back_populates='user',
-    )
+    cart: Mapped['Cart | None'] = relationship('Cart', back_populates='user')
+    orders: Mapped[list['Order']] = relationship('Order', back_populates='user')
