@@ -1,0 +1,112 @@
+services:
+  app:
+    build: .
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - '127.0.0.1:8001:8000'
+    depends_on:
+      postgres:
+        condition:
+          service_healthy
+      redis:
+        condition:
+          service_healthy
+      migrations-app:
+        condition:
+          service_completed_successfully
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - '127.0.0.1:5434:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', '${POSTGRES_USER}', '-d', '${POSTGRES_DB}']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+  
+  redis:
+    image: redis:8-alpine
+    ports:
+      - '127.0.0.1:6381:6379'
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  postgres-test:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: shop_test
+      POSTGRES_USER: shop_test
+      POSTGRES_PASSWORD: shop_test
+    ports:
+      - '127.0.0.1:5433:5432'
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'shop_test', '-d', 'shop_test']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+  
+  migrations:
+    build: .
+    environment:
+      DB_HOST: postgres-test
+      DB_PORT: 5432
+      DB_NAME: shop_test
+      DB_USER: shop_test
+      DB_PASSWORD: shop_test
+    command: python -m alembic upgrade head
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+
+  migrations-app:
+    build: .
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}   
+    command: python -m alembic upgrade head
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis-test:
+    image: redis:8-alpine
+    ports:
+      - '127.0.0.1:6380:6379'
+    command: ['redis-server', '--save', '', '--appendonly', 'no']
+    healthcheck:
+      test: ["CMD", "redis-cli", 'ping']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  postgres-data:
+  redis-data:
