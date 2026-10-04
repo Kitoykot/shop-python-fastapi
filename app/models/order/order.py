@@ -9,6 +9,7 @@ from app.enums.order.order_status import OrderStatus
 from app.models.base import Base
 
 if TYPE_CHECKING:
+    from app.models.order.order_item import OrderItem
     from app.models.user.user import User
 
 
@@ -33,3 +34,9 @@ class Order(Base):
     )
 
     user: Mapped['User'] = relationship('User', back_populates='orders')
+    items: Mapped[list['OrderItem']] = relationship(
+        'OrderItem',
+        back_populates='order',
+        cascade='all, delete-orphan',
+        passive_deletes=True,
+    )
