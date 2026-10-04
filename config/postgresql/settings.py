@@ -6,8 +6,9 @@ class Database(BaseSettings):
     db_port: int
     db_name: str
     db_user: str
-    db_password: str = ""
+    db_password: str = ''
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file='.env', extra='ignore')
+
 
 database = Database()

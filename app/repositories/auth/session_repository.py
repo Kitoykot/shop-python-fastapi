@@ -1,14 +1,15 @@
-from datetime import UTC, datetime, timedelta
 import hashlib
 import secrets
-
-from app.dto.auth.token_info_dto import TokenInfoDto
+from datetime import UTC, datetime, timedelta
 
 from redis import Redis
 from redis.exceptions import WatchError
 
+from app.dto.auth.token_info_dto import TokenInfoDto
+
 ACCESS_TOKEN_EXPIRES_IN_SECONDS = 60 * 60 * 24 * 7
 REFRESH_TOKEN_EXPIRES_IN_SECONDS = 60 * 60 * 24 * 7
+
 
 class SessionRepository:
     def __init__(self, client: Redis):
@@ -31,8 +32,12 @@ class SessionRepository:
         refresh_key = self.__token_key('refresh', refresh_hash)
 
         now = datetime.now(UTC).replace(microsecond=0)
-        access_token_expires_at = now + timedelta(seconds=ACCESS_TOKEN_EXPIRES_IN_SECONDS)
-        refresh_token_expires_at = now + timedelta(seconds=REFRESH_TOKEN_EXPIRES_IN_SECONDS)
+        access_token_expires_at = now + timedelta(
+            seconds=ACCESS_TOKEN_EXPIRES_IN_SECONDS
+        )
+        refresh_token_expires_at = now + timedelta(
+            seconds=REFRESH_TOKEN_EXPIRES_IN_SECONDS
+        )
 
         with self.client.pipeline(transaction=True) as pipeline:
             pipeline.set(
@@ -44,7 +49,7 @@ class SessionRepository:
                 name=refresh_key,
                 mapping={
                     'user_id': user_id,
-                    'access_hash' : access_hash,
+                    'access_hash': access_hash,
                 },
             )
             pipeline.expireat(name=refresh_key, when=refresh_token_expires_at)
@@ -59,7 +64,9 @@ class SessionRepository:
         )
 
     def get_user_id_by_refresh(self, refresh_token: str) -> int | None:
-        refresh_key = self.__token_key(token_type='refresh', token_hash=self.__get_token_hash(refresh_token))
+        refresh_key = self.__token_key(
+            token_type='refresh', token_hash=self.__get_token_hash(refresh_token)
+        )
         user_id = self.client.hget(refresh_key, 'user_id')
 
         if not user_id:
@@ -67,9 +74,10 @@ class SessionRepository:
 
         return int(user_id)
 
-
     def get_user_id_by_access(self, access_token: str) -> int | None:
-        access_key = self.__token_key(token_type='access', token_hash=self.__get_token_hash(access_token))
+        access_key = self.__token_key(
+            token_type='access', token_hash=self.__get_token_hash(access_token)
+        )
         user_id = self.client.get(access_key)
 
         if not user_id:
@@ -77,9 +85,14 @@ class SessionRepository:
 
         return int(user_id)
 
-
-    def refresh_session(self, refresh_token: str, expected_user_id: int,) -> TokenInfoDto | None:
-        old_refresh_key = self.__token_key(token_type='refresh', token_hash=self.__get_token_hash(refresh_token))
+    def refresh_session(
+        self,
+        refresh_token: str,
+        expected_user_id: int,
+    ) -> TokenInfoDto | None:
+        old_refresh_key = self.__token_key(
+            token_type='refresh', token_hash=self.__get_token_hash(refresh_token)
+        )
 
         with self.client.pipeline(transaction=True) as pipeline:
             try:
@@ -96,7 +109,9 @@ class SessionRepository:
                     return None
 
                 old_access_hash = old_session.get('access_hash')
-                old_access_key = self.__token_key(token_type='access', token_hash=old_access_hash)
+                old_access_key = self.__token_key(
+                    token_type='access', token_hash=old_access_hash
+                )
 
                 new_access_token = secrets.token_urlsafe(32)
                 new_refresh_token = secrets.token_urlsafe(32)
@@ -108,8 +123,12 @@ class SessionRepository:
                 new_refresh_key = self.__token_key('refresh', new_refresh_hash)
 
                 now = datetime.now(UTC).replace(microsecond=0)
-                new_access_token_expires_at = now + timedelta(seconds=ACCESS_TOKEN_EXPIRES_IN_SECONDS)
-                new_refresh_token_expires_at = now + timedelta(seconds=REFRESH_TOKEN_EXPIRES_IN_SECONDS)
+                new_access_token_expires_at = now + timedelta(
+                    seconds=ACCESS_TOKEN_EXPIRES_IN_SECONDS
+                )
+                new_refresh_token_expires_at = now + timedelta(
+                    seconds=REFRESH_TOKEN_EXPIRES_IN_SECONDS
+                )
 
                 pipeline.multi()
                 pipeline.delete(old_refresh_key, old_access_key)
@@ -123,10 +142,12 @@ class SessionRepository:
                     name=new_refresh_key,
                     mapping={
                         'user_id': user_id,
-                        'access_hash' : new_access_hash,
+                        'access_hash': new_access_hash,
                     },
                 )
-                pipeline.expireat(name=new_refresh_key, when=new_refresh_token_expires_at)
+                pipeline.expireat(
+                    name=new_refresh_key, when=new_refresh_token_expires_at
+                )
 
                 pipeline.execute()
             except WatchError:
@@ -137,10 +158,12 @@ class SessionRepository:
             refresh_token=new_refresh_token,
             access_token_expires_at=new_access_token_expires_at.isoformat(),
             refresh_token_expires_at=new_refresh_token_expires_at.isoformat(),
-        ) 
+        )
 
     def clear_session(self, refresh_token: str) -> None:
-        refresh_key = self.__token_key(token_type='refresh', token_hash=self.__get_token_hash(refresh_token))
+        refresh_key = self.__token_key(
+            token_type='refresh', token_hash=self.__get_token_hash(refresh_token)
+        )
         refresh_session = self.client.hgetall(refresh_key)
 
         if not refresh_session:

@@ -10,7 +10,7 @@ class UserRegisterRequest(BaseModel):
     email: EmailStr = Field(min_length=5, max_length=254)
     password: str = Field(min_length=8, max_length=256)
     phone_number: str = Field(
-        min_length=4, 
+        min_length=4,
         max_length=16,
         pattern=r'^[0-9]+$',
     )

@@ -6,7 +6,9 @@ from app.dto.auth.token_info_dto import TokenInfoDto
 from app.dto.auth.user_login_dto import UserLoginDto
 from app.dto.user.user_dto import UserDto
 from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
-from app.exceptions.auth.wrong_email_or_password_exception import WrongEmailOrPasswordException
+from app.exceptions.auth.wrong_email_or_password_exception import (
+    WrongEmailOrPasswordException,
+)
 from app.repositories.auth.session_repository import SessionRepository
 from app.repositories.auth.user_repository import UserRepository
 from app.services.auth.auth_service import AuthService
@@ -25,21 +27,18 @@ class TestLogin:
             password_service=self.password_service,
         )
 
-
     def test_if_user_is_none(self) -> None:
         self.user_repository.find_user_by_email.return_value = None
 
         with pytest.raises(WrongEmailOrPasswordException):
-            self.service.login(UserLoginDto(
-                email='user@test.com',
-                password='qwerty1234'
-            ))
+            self.service.login(
+                UserLoginDto(email='user@test.com', password='qwerty1234')
+            )
 
         self.user_repository.find_user_by_email.assert_called_once_with('user@test.com')
 
         self.password_service.verify.assert_not_called()
         self.session_repository.create_token.assert_not_called()
-
 
     def test_if_user_password_is_not_verified(self) -> None:
         user_dto = UserDto(
@@ -52,16 +51,16 @@ class TestLogin:
         self.password_service.verify.return_value = False
 
         with pytest.raises(WrongEmailOrPasswordException):
-            self.service.login(UserLoginDto(
-                email='user@test.com',
-                password='qwerty1234'
-            ))
+            self.service.login(
+                UserLoginDto(email='user@test.com', password='qwerty1234')
+            )
 
         self.user_repository.find_user_by_email.assert_called_once_with('user@test.com')
-        self.password_service.verify.assert_called_once_with(password='qwerty1234', password_hash='password_hash')
+        self.password_service.verify.assert_called_once_with(
+            password='qwerty1234', password_hash='password_hash'
+        )
 
         self.session_repository.create_token.assert_not_called()
-
 
     def test_if_user_is_not_active(self) -> None:
         user_dto = UserDto(
@@ -74,16 +73,16 @@ class TestLogin:
         self.password_service.verify.return_value = True
 
         with pytest.raises(UserIsNotActiveException):
-            self.service.login(UserLoginDto(
-                email='user@test.com',
-                password='qwerty1234'
-            ))
+            self.service.login(
+                UserLoginDto(email='user@test.com', password='qwerty1234')
+            )
 
         self.user_repository.find_user_by_email.assert_called_once_with('user@test.com')
-        self.password_service.verify.assert_called_once_with(password='qwerty1234', password_hash='password_hash')
-            
-        self.session_repository.create_token.assert_not_called()
+        self.password_service.verify.assert_called_once_with(
+            password='qwerty1234', password_hash='password_hash'
+        )
 
+        self.session_repository.create_token.assert_not_called()
 
     def test_successful_login(self) -> None:
         user_dto = UserDto(
@@ -101,10 +100,9 @@ class TestLogin:
             refresh_token_expires_at='2026-10-29 11:00:00',
         )
 
-        result = self.service.login(UserLoginDto(
-                email='user@test.com',
-                password='qwerty1234'
-            ))
+        result = self.service.login(
+            UserLoginDto(email='user@test.com', password='qwerty1234')
+        )
 
         assert result.access_token == 'acces-token'
         assert result.refresh_token == 'refresh-token'
@@ -112,5 +110,7 @@ class TestLogin:
         assert result.refresh_token_expires_at == '2026-10-29 11:00:00'
 
         self.user_repository.find_user_by_email.assert_called_once_with('user@test.com')
-        self.password_service.verify.assert_called_once_with(password='qwerty1234', password_hash='password_hash')
+        self.password_service.verify.assert_called_once_with(
+            password='qwerty1234', password_hash='password_hash'
+        )
         self.session_repository.create_token.assert_called_once_with(1)

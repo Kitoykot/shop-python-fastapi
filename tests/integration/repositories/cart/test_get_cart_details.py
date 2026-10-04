@@ -19,10 +19,8 @@ class TestGetCartDetails:
         self.user = user
         self.repository = repository
 
-
     def test_missing_cart(self) -> None:
         assert self.repository.get_cart_details(self.user.id) is None
-
 
     def test_not_my_cart(self, db_session: Session) -> None:
         other_user = User(
@@ -35,7 +33,7 @@ class TestGetCartDetails:
             is_active=True,
             role=UserRole.USER,
         )
-        
+
         db_session.add(other_user)
         db_session.flush()
 
@@ -45,7 +43,6 @@ class TestGetCartDetails:
         db_session.flush()
 
         assert self.repository.get_cart_details(self.user.id) is None
-
 
     def test_cart_without_products(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
@@ -80,22 +77,14 @@ class TestGetCartDetails:
         db_session.add_all([cart, product_one, product_two])
         db_session.flush()
 
-        cart_item_one = CartItem(
-            cart_id=cart.id,
-            product_id=product_one.id,
-            count=6
-        )
-        cart_item_two = CartItem(
-            cart_id=cart.id,
-            product_id=product_two.id,
-            count=7
-        )
+        cart_item_one = CartItem(cart_id=cart.id, product_id=product_one.id, count=6)
+        cart_item_two = CartItem(cart_id=cart.id, product_id=product_two.id, count=7)
 
         db_session.add_all([cart_item_one, cart_item_two])
         db_session.flush()
 
         result = self.repository.get_cart_details(self.user.id)
-        
+
         assert result is not None
         assert result.id == cart.id
         assert result.user_id == self.user.id

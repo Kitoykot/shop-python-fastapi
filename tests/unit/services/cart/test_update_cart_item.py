@@ -17,10 +17,8 @@ class TestUpdateCartItem:
         self.product_repository = Mock(spec=ProductRepository)
 
         self.service = CartService(
-            repository=self.cart_repository,
-            product_repository=self.product_repository
+            repository=self.cart_repository, product_repository=self.product_repository
         )
-
 
     def test_if_product_is_none(self) -> None:
         self.product_repository.get_product_details.return_value = None
@@ -55,7 +53,6 @@ class TestUpdateCartItem:
 
         self.cart_repository.update_cart_item.assert_not_called()
 
-
     def test_success_update(self) -> None:
         self.product_repository.get_product_details.return_value = ProductDto(
             id=1,
@@ -75,8 +72,9 @@ class TestUpdateCartItem:
         self.service.update_cart_item(user_id=4, dto=dto)
 
         self.product_repository.get_product_details.assert_called_once_with(1)
-        self.cart_repository.update_cart_item.assert_called_once_with(user_id=4, dto=dto)
-
+        self.cart_repository.update_cart_item.assert_called_once_with(
+            user_id=4, dto=dto
+        )
 
     def test_success_update_if_request_count_is_bigger(self) -> None:
         self.product_repository.get_product_details.return_value = ProductDto(
@@ -97,5 +95,6 @@ class TestUpdateCartItem:
         self.service.update_cart_item(user_id=4, dto=dto)
 
         self.product_repository.get_product_details.assert_called_once_with(1)
-        self.cart_repository.update_cart_item.assert_called_once_with(user_id=4, dto=dto)
-        
+        self.cart_repository.update_cart_item.assert_called_once_with(
+            user_id=4, dto=dto
+        )

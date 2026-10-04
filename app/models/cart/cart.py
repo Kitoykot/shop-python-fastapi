@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey
-
-from app.models.base import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.models.base import Base
+
 if TYPE_CHECKING:
-    from app.models.user.user import User
     from app.models.cart.cart_item import CartItem
+    from app.models.user.user import User
+
 
 class Cart(Base):
     __tablename__ = 'carts'
@@ -18,12 +19,7 @@ class Cart(Base):
         unique=True,
     )
 
-    user: Mapped['User'] = relationship(
-        'User',
-        back_populates='cart'
-    )
+    user: Mapped['User'] = relationship('User', back_populates='cart')
     items: Mapped[list['CartItem']] = relationship(
-        'CartItem',
-        back_populates='cart',
-        order_by='CartItem.id'
+        'CartItem', back_populates='cart', order_by='CartItem.id'
     )

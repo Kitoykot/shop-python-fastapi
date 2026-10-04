@@ -1,19 +1,21 @@
-from app.dto.auth.user_register_dto import UserRegisterDto
+from app.dto.auth.token_info_dto import TokenInfoDto
 from app.dto.auth.user_create_dto import UserCreateDto
 from app.dto.auth.user_login_dto import UserLoginDto
-from app.dto.auth.token_info_dto import TokenInfoDto
-
+from app.dto.auth.user_register_dto import UserRegisterDto
 from app.dto.user.user_dto import UserDto
 from app.exceptions.auth.email_is_already_exists_exception import EmailIsAlreadyExists
-from app.exceptions.auth.phone_is_already_exists_exception import PhoneNumberIsAlreadyExists
-from app.exceptions.auth.wrong_email_or_password_exception import WrongEmailOrPasswordException
-from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
+from app.exceptions.auth.phone_is_already_exists_exception import (
+    PhoneNumberIsAlreadyExists,
+)
 from app.exceptions.auth.unauthorized_exception import UnauthorizedException
-
-from app.repositories.auth.user_repository import UserRepository
+from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
+from app.exceptions.auth.wrong_email_or_password_exception import (
+    WrongEmailOrPasswordException,
+)
 from app.repositories.auth.session_repository import SessionRepository
-
+from app.repositories.auth.user_repository import UserRepository
 from app.services.auth.password_service import PasswordService
+
 
 class AuthService:
     def __init__(
@@ -50,7 +52,12 @@ class AuthService:
         if user is None:
             raise WrongEmailOrPasswordException()
 
-        if self.password_service.verify(password=dto.password, password_hash=user.password_hash) is False:
+        if (
+            self.password_service.verify(
+                password=dto.password, password_hash=user.password_hash
+            )
+            is False
+        ):
             raise WrongEmailOrPasswordException()
 
         if user.is_active is False:
@@ -62,14 +69,13 @@ class AuthService:
         user_id = self.session_repository.get_user_id_by_access(access_token)
 
         return self.__find_and_check_user_by_user_id(user_id)
-            
+
     def refresh_session(self, refresh_token: str) -> TokenInfoDto:
         user_id = self.session_repository.get_user_id_by_refresh(refresh_token)
         self.__find_and_check_user_by_user_id(user_id)
 
         tokens = self.session_repository.refresh_session(
-            refresh_token=refresh_token, 
-            expected_user_id=user_id
+            refresh_token=refresh_token, expected_user_id=user_id
         )
 
         if tokens is None:

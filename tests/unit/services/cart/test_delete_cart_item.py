@@ -11,12 +11,12 @@ class TestDeleteCartItem:
         self.product_repository = Mock(spec=ProductRepository)
 
         self.service = CartService(
-            repository=self.cart_repository,
-            product_repository=self.product_repository
+            repository=self.cart_repository, product_repository=self.product_repository
         )
-
 
     def test_success_delete_cart_item(self) -> None:
         self.service.delete_cart_item(item_id=1, user_id=2)
 
-        self.cart_repository.delete_cart_item.assert_called_once_with(item_id=1, user_id=2)
+        self.cart_repository.delete_cart_item.assert_called_once_with(
+            item_id=1, user_id=2
+        )

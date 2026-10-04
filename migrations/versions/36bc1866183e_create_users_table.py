@@ -5,11 +5,11 @@ Revises: f71e2d376171
 Create Date: 2026-09-20 16:29:42.442684
 
 """
+
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
-
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision: str = '36bc1866183e'
@@ -31,10 +31,15 @@ def upgrade() -> None:
         sa.Column('password_hash', sa.String(length=256), nullable=False),
         sa.Column('phone_number', sa.String(length=16), nullable=False),
         sa.Column('is_active', sa.Boolean(), server_default='true', nullable=False),
-        sa.Column('role', sa.Enum('user', 'admin', name='user_role'), server_default='user', nullable=False),
+        sa.Column(
+            'role',
+            sa.Enum('user', 'admin', name='user_role'),
+            server_default='user',
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('email'),
-        sa.UniqueConstraint('phone_number')
+        sa.UniqueConstraint('phone_number'),
     )
     # ### end Alembic commands ###
 

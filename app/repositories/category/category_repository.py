@@ -1,15 +1,13 @@
-
 from sqlalchemy import delete, select, update
-from sqlalchemy.orm import Session
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.orm import Session
 
 from app.dto.category.category_dto import CategoryDto
 from app.dto.category.create_category_dto import CreateCategoryDto
 from app.dto.category.update_category_dto import UpdateCategoryDto
-
 from app.models.category.category import Category
-from app.models.product.product import Product
 from app.models.category.category_products import category_products
+from app.models.product.product import Product
 
 
 class CategoryRepository:
@@ -52,7 +50,7 @@ class CategoryRepository:
         statement = (
             insert(category_products)
             .values(category_id=category_id, product_id=product_id)
-            .on_conflict_do_nothing(index_elements=["category_id", "product_id"])
+            .on_conflict_do_nothing(index_elements=['category_id', 'product_id'])
         )
 
         self.session.execute(statement)

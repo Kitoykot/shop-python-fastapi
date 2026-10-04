@@ -1,8 +1,8 @@
+from app.dto.product.create_product_dto import CreateProductDto
+from app.dto.product.product_dto import ProductDto
+from app.dto.product.update_product_dto import UpdateProductDto
 from app.exceptions.product.product_not_found_exception import ProductNotFoundException
 from app.repositories.product.product_repository import ProductRepository
-from app.dto.product.product_dto import ProductDto
-from app.dto.product.create_product_dto import CreateProductDto
-from app.dto.product.update_product_dto import UpdateProductDto
 
 
 class ProductService:
@@ -14,7 +14,7 @@ class ProductService:
 
     def get_product_details(self, id: int) -> ProductDto:
         product = self.repository.get_product_details(id)
-        
+
         if product is None:
             raise ProductNotFoundException()
 

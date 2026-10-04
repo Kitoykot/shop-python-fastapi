@@ -2,7 +2,6 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from app.dependencies.db.db_dependency import get_db
-
 from app.repositories.category.category_repository import CategoryRepository
 from app.repositories.product.product_repository import ProductRepository
 from app.services.category.category_service import CategoryService

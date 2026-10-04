@@ -4,6 +4,7 @@ from decimal import Decimal
 from app.dto.cart.cart_dto import CartDto
 from app.dto.cart.cart_item_dto import CartItemDto
 
+
 @dataclass
 class CartDetailsDto:
     cart: CartDto

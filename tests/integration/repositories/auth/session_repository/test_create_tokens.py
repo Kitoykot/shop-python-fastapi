@@ -3,11 +3,10 @@ import hashlib
 import pytest
 from redis import Redis
 
-from app.repositories.auth.session_repository import SessionRepository
-
-from app.repositories.auth.session_repository import(
+from app.repositories.auth.session_repository import (
     ACCESS_TOKEN_EXPIRES_IN_SECONDS,
     REFRESH_TOKEN_EXPIRES_IN_SECONDS,
+    SessionRepository,
 )
 
 

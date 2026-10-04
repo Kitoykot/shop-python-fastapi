@@ -1,10 +1,10 @@
-from sqlalchemy import select, delete, update
-
-from app.models.product.product import Product
-from app.dto.product.product_dto import ProductDto
-from app.dto.product.create_product_dto import CreateProductDto
-from app.dto.product.update_product_dto import UpdateProductDto
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
+
+from app.dto.product.create_product_dto import CreateProductDto
+from app.dto.product.product_dto import ProductDto
+from app.dto.product.update_product_dto import UpdateProductDto
+from app.models.product.product import Product
 
 
 class ProductRepository:
@@ -21,19 +21,13 @@ class ProductRepository:
     def get_products_by_category(self, category_id: int) -> list[ProductDto]:
         statement = (
             select(Product)
-            .where(
-                Product.categories.any(id=category_id),
-                Product.active()
-            )
+            .where(Product.categories.any(id=category_id), Product.active())
             .order_by(Product.id)
         )
 
         products = self.session.scalars(statement).all()
 
-        return [
-            self.__to_dto(product)
-            for product in products
-        ]
+        return [self.__to_dto(product) for product in products]
 
     def get_product_details(self, id: int) -> ProductDto | None:
         statement = select(Product).where(Product.id == (id))
@@ -76,5 +70,5 @@ class ProductRepository:
             price=product.price,
             show_in_catalog=product.show_in_catalog,
             count=product.count,
-            is_available=product.is_available
+            is_available=product.is_available,
         )

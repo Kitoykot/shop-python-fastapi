@@ -18,17 +18,15 @@ class TestClearCart:
         self.user = user
         self.repository = repository
 
-
     def test_no_cart(self, db_session: Session) -> None:
         self.repository.delete_all_cart_items(self.user.id)
 
         statement = select(Cart).where(Cart.user_id == self.user.id)
         assert db_session.scalar(statement) is None
 
-
     def test_empty_cart(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
-        
+
         db_session.add(cart)
         db_session.flush()
 
@@ -39,7 +37,6 @@ class TestClearCart:
 
         assert db_session.scalar(cart_statement) == cart.id
         assert db_session.scalars(items_statement).all() == []
-
 
     def test_with_items_in_cart(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
@@ -79,14 +76,17 @@ class TestClearCart:
 
         product_ids = [product_one.id, product_two.id]
 
-        cart_statement = select(Cart.id).where(Cart.user_id == self.user.id, Cart.id == cart.id)
-        remaining_cart_items_ids_statement = select(CartItem.id).where(CartItem.cart_id == cart.id)
+        cart_statement = select(Cart.id).where(
+            Cart.user_id == self.user.id, Cart.id == cart.id
+        )
+        remaining_cart_items_ids_statement = select(CartItem.id).where(
+            CartItem.cart_id == cart.id
+        )
         product_ids_statement = select(Product.id).where(Product.id.in_(product_ids))
 
         assert db_session.execute(cart_statement).scalar_one() is not None
         assert db_session.scalars(remaining_cart_items_ids_statement).all() == []
         assert set(db_session.scalars(product_ids_statement).all()) == set(product_ids)
-
 
     def test_cant_clear_other_user_cart(self, db_session: Session) -> None:
         user_two = User(
@@ -102,7 +102,7 @@ class TestClearCart:
 
         db_session.add(user_two)
         db_session.flush()
-        
+
         cart_one = Cart(user_id=self.user.id)
         cart_two = Cart(user_id=user_two.id)
 
@@ -136,8 +136,12 @@ class TestClearCart:
 
         self.repository.delete_all_cart_items(self.user.id)
 
-        other_user_cart_items_statement = select(CartItem.id).where(CartItem.cart_id == cart_two.id)
+        other_user_cart_items_statement = select(CartItem.id).where(
+            CartItem.cart_id == cart_two.id
+        )
         my_items_statement = select(CartItem.id).where(CartItem.cart_id == cart_one.id)
 
         assert db_session.scalars(my_items_statement).all() == []
-        assert db_session.scalars(other_user_cart_items_statement).all() == [cart_item_two.id]
+        assert db_session.scalars(other_user_cart_items_statement).all() == [
+            cart_item_two.id
+        ]

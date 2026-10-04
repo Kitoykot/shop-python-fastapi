@@ -24,14 +24,15 @@ class TestRefreshSession:
             password_service=self.password_service,
         )
 
-
     def test_if_user_id_is_none(self) -> None:
         self.session_repository.get_user_id_by_refresh.return_value = None
 
         with pytest.raises(UnauthorizedException):
             self.service.refresh_session('refresh-token')
 
-        self.session_repository.get_user_id_by_refresh.assert_called_once_with('refresh-token')
+        self.session_repository.get_user_id_by_refresh.assert_called_once_with(
+            'refresh-token'
+        )
 
         self.user_repository.find_user_by_id.assert_not_called()
         self.session_repository.refresh_session.assert_not_called()
@@ -43,9 +44,11 @@ class TestRefreshSession:
         with pytest.raises(UnauthorizedException):
             self.service.refresh_session('refresh-token')
 
-        self.session_repository.get_user_id_by_refresh.assert_called_once_with('refresh-token')
+        self.session_repository.get_user_id_by_refresh.assert_called_once_with(
+            'refresh-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
-        
+
         self.session_repository.refresh_session.assert_not_called()
 
     def test_if_user_is_not_active(self) -> None:
@@ -59,11 +62,12 @@ class TestRefreshSession:
         with pytest.raises(UserIsNotActiveException):
             self.service.refresh_session('refresh-token')
 
-        self.session_repository.get_user_id_by_refresh.assert_called_once_with('refresh-token')
+        self.session_repository.get_user_id_by_refresh.assert_called_once_with(
+            'refresh-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
-        
-        self.session_repository.refresh_session.assert_not_called()
 
+        self.session_repository.refresh_session.assert_not_called()
 
     def test_if_tokens_is_none(self) -> None:
         self.session_repository.get_user_id_by_refresh.return_value = 1
@@ -77,13 +81,14 @@ class TestRefreshSession:
         with pytest.raises(UnauthorizedException):
             self.service.refresh_session('refresh-token')
 
-        self.session_repository.get_user_id_by_refresh.assert_called_once_with('refresh-token')
+        self.session_repository.get_user_id_by_refresh.assert_called_once_with(
+            'refresh-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
         self.session_repository.refresh_session.assert_called_once_with(
             refresh_token='refresh-token',
             expected_user_id=1,
         )
-
 
     def test_refresh_session(self) -> None:
         self.session_repository.get_user_id_by_refresh.return_value = 1
@@ -101,7 +106,9 @@ class TestRefreshSession:
 
         result = self.service.refresh_session('refresh-token')
 
-        self.session_repository.get_user_id_by_refresh.assert_called_once_with('refresh-token')
+        self.session_repository.get_user_id_by_refresh.assert_called_once_with(
+            'refresh-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
         self.session_repository.refresh_session.assert_called_once_with(
             refresh_token='refresh-token',

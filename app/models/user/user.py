@@ -1,13 +1,14 @@
 from typing import TYPE_CHECKING
 
-from app.enums.user.user_role import UserRole
-from app.models.base import Base
-
 from sqlalchemy import Boolean, Enum, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.enums.user.user_role import UserRole
+from app.models.base import Base
+
 if TYPE_CHECKING:
     from app.models.cart.cart import Cart
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -19,7 +20,9 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(254), unique=True)
     password_hash: Mapped[str] = mapped_column(String(256))
     phone_number: Mapped[str] = mapped_column(String(16), unique=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default='true')
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, server_default='true'
+    )
     role: Mapped[UserRole] = mapped_column(
         Enum(
             UserRole,

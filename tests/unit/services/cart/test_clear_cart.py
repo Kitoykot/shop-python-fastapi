@@ -11,11 +11,9 @@ class TestClearCart:
         self.product_repository = Mock(spec=ProductRepository)
 
         self.service = CartService(
-            repository=self.cart_repository,
-            product_repository=self.product_repository
+            repository=self.cart_repository, product_repository=self.product_repository
         )
 
-    
     def test_success_clear_cart(self) -> None:
         self.service.clear_cart(user_id=2)
 

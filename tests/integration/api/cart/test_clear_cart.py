@@ -21,7 +21,6 @@ class TestClearCart:
 
         assert response.status_code == 401
 
-
     @pytest.mark.usefixtures('authorized_user')
     def test_no_cart(self, user: User) -> None:
 
@@ -30,13 +29,11 @@ class TestClearCart:
 
             assert response.status_code == 200
 
-
     @pytest.mark.usefixtures('authorized_user')
     def test_empty_cart(self, user: User, db_session: Session) -> None:
         cart = Cart(user_id=user.id)
         db_session.add(cart)
         db_session.flush()
-
 
         with TestClient(app) as client:
             response = client.delete('/api/v1/cart/items')
@@ -48,7 +45,6 @@ class TestClearCart:
 
         assert db_session.execute(cart_statement).scalar_one() == cart.id
         assert db_session.scalars(items_statement).all() == []
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_clear_cart_with_items(self, user: User, db_session: Session) -> None:
@@ -70,12 +66,13 @@ class TestClearCart:
         db_session.add_all([cart, product_one, product_two])
         db_session.flush()
 
-        db_session.add_all([
-            CartItem(cart_id=cart.id, product_id=product_one.id, count=2),
-            CartItem(cart_id=cart.id, product_id=product_two.id, count=3),
-        ])
+        db_session.add_all(
+            [
+                CartItem(cart_id=cart.id, product_id=product_one.id, count=2),
+                CartItem(cart_id=cart.id, product_id=product_two.id, count=3),
+            ]
+        )
         db_session.flush()
-
 
         with TestClient(app) as client:
             response = client.delete('/api/v1/cart/items')
@@ -90,7 +87,6 @@ class TestClearCart:
         assert db_session.execute(cart_statement).scalar_one() == cart.id
         assert db_session.scalars(items_statement).all() == []
         assert set(db_session.scalars(products_statement).all()) == product_ids
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_cant_clear_other_user_cart(self, user: User, db_session: Session) -> None:
@@ -124,14 +120,15 @@ class TestClearCart:
         db_session.add_all([my_item, other_item])
         db_session.flush()
 
-
         with TestClient(app) as client:
             response = client.delete('/api/v1/cart/items')
 
             assert response.status_code == 200
 
         my_items_statement = select(CartItem.id).where(CartItem.cart_id == my_cart.id)
-        other_items_statement = select(CartItem.id).where(CartItem.cart_id == other_cart.id)
+        other_items_statement = select(CartItem.id).where(
+            CartItem.cart_id == other_cart.id
+        )
 
         assert db_session.scalars(my_items_statement).all() == []
         assert db_session.scalars(other_items_statement).all() == [other_item.id]

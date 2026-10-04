@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 import pytest
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -19,13 +18,11 @@ class TestDeleteCartItem:
         self.user = user
         self.repository = repository
 
-
     def test_cart_id_is_none(self, db_session: Session) -> None:
         self.repository.delete_cart_item(item_id=1, user_id=self.user.id)
-        
+
         statement = select(Cart).where(Cart.user_id == self.user.id)
         assert db_session.scalar(statement) is None
-
 
     def test_delete_cart_item(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
@@ -69,7 +66,6 @@ class TestDeleteCartItem:
         assert cart is not None
         assert cart_item_ids == [cart_item_two.id]
 
-    
     def test_delete_cart_item_if_no_item(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
 
@@ -98,7 +94,7 @@ class TestDeleteCartItem:
 
         db_session.add(user_two)
         db_session.flush()
-        
+
         cart_one = Cart(user_id=self.user.id)
         cart_two = Cart(user_id=user_two.id)
 
@@ -135,13 +131,16 @@ class TestDeleteCartItem:
         statement = select(CartItem).where(CartItem.cart_id == cart_one.id)
         my_cart_item = db_session.scalar(statement)
 
-        other_user_cart_item_statement = select(CartItem).where(CartItem.cart_id == cart_two.id)
-        other_user_cart_item = db_session.execute(other_user_cart_item_statement).scalar_one()
+        other_user_cart_item_statement = select(CartItem).where(
+            CartItem.cart_id == cart_two.id
+        )
+        other_user_cart_item = db_session.execute(
+            other_user_cart_item_statement
+        ).scalar_one()
 
         assert my_cart_item is None
         assert other_user_cart_item is not None
         assert other_user_cart_item.cart_id == cart_two.id
-
 
     def test_cant_delete_other_user_cart_item(self, db_session: Session) -> None:
         user_two = User(

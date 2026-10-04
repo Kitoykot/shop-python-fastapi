@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
+
 from app.dto.product.update_product_dto import UpdateProductDto
 
 

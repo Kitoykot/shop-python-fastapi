@@ -1,14 +1,12 @@
 from decimal import Decimal
 
+import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.enums.user.user_role import UserRole
 from app.main import app
-
-from fastapi.testclient import TestClient
-import pytest
-
 from app.models.cart.cart import Cart
 from app.models.cart.cart_item import CartItem
 from app.models.product.product import Product
@@ -23,15 +21,13 @@ class TestDeleteItem:
 
             assert response.status_code == 401
 
-
     @pytest.mark.usefixtures('authorized_user')
     def test_not_valid_path_param(self, user: User) -> None:
-        
+
         with TestClient(app) as client:
             response = client.delete(url='/api/v1/cart/items/abc')
 
             assert response.status_code == 422
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_detele_item(self, user: User, db_session: Session) -> None:
@@ -68,7 +64,6 @@ class TestDeleteItem:
 
         cart_item_one_id = cart_item_one.id
 
-
         with TestClient(app) as client:
             response = client.delete(url=f'/api/v1/cart/items/{cart_item_one_id}')
 
@@ -90,7 +85,6 @@ class TestDeleteItem:
         assert db_session.execute(cart_statement).scalar_one() is not None
         assert db_session.scalar(item_one_statement) is None
         assert db_session.execute(item_two_statement).scalar_one() is not None
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_cant_delete_other_user_item(self, user: User, db_session: Session) -> None:
@@ -127,7 +121,6 @@ class TestDeleteItem:
         cart_ids = [my_cart.id, other_cart.id]
         expected_item_ids = {my_item.id, other_item.id}
 
-
         with TestClient(app) as client:
             response = client.delete(url=f'/api/v1/cart/items/{other_item.id}')
 
@@ -138,9 +131,10 @@ class TestDeleteItem:
 
         assert set(remaining_item_ids) == expected_item_ids
 
-
     @pytest.mark.usefixtures('authorized_user')
-    def test_delete_item_that_doesnt_exist(self, user: User, db_session: Session) -> None:
+    def test_delete_item_that_doesnt_exist(
+        self, user: User, db_session: Session
+    ) -> None:
         cart = Cart(user_id=user.id)
         product = Product(
             name='Product 1',
@@ -156,7 +150,6 @@ class TestDeleteItem:
         db_session.add(item)
         db_session.flush()
 
-
         with TestClient(app) as client:
             response = client.delete(url=f'/api/v1/cart/items/{item.id}')
             assert response.status_code == 200
@@ -167,10 +160,8 @@ class TestDeleteItem:
             response = client.delete(url=f'/api/v1/cart/items/{item.id}')
             assert response.status_code == 200
 
-
         cart_statement = select(Cart.id).where(Cart.user_id == user.id)
         assert db_session.execute(cart_statement).scalar_one() == cart.id
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_delete_item_without_cart(self, user: User) -> None:

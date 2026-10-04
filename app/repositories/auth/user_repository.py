@@ -1,33 +1,23 @@
-import code
-from email import message
-
-from psycopg import IntegrityError
 from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.dto.auth.user_create_dto import UserCreateDto
 from app.dto.user.user_dto import UserDto
-
 from app.enums.user.user_role import UserRole
-from app.exceptions.app_exception import AppException
 from app.models.user.user import User
+
 
 class UserRepository:
     def __init__(self, session: Session):
         self.session = session
 
     def exists_by_email(self, email: str) -> bool:
-        statement = select(
-            exists(User).where(User.email == email)
-        )
+        statement = select(exists(User).where(User.email == email))
 
         return bool(self.session.scalar(statement))
 
     def exists_by_phone_number(self, phone_number: str) -> bool:
-        statement = select(
-            exists(User).where(User.phone_number == phone_number)
-        )
+        statement = select(exists(User).where(User.phone_number == phone_number))
 
         return bool(self.session.scalar(statement))
 
@@ -45,7 +35,6 @@ class UserRepository:
 
         self.session.add(user)
         self.session.commit()
-
 
     def find_user_by_email(self, email: str) -> UserDto | None:
         statement = select(User).where(User.email == email)
@@ -65,10 +54,7 @@ class UserRepository:
 
         return self.__to_dto(user)
 
-
     def __to_dto(self, user: User) -> UserDto:
         return UserDto(
-            id=user.id,
-            password_hash=user.password_hash,
-            is_active=user.is_active
+            id=user.id, password_hash=user.password_hash, is_active=user.is_active
         )

@@ -9,38 +9,33 @@ from app.repositories.cart.cart_repository import CartRepository
 from app.repositories.product.product_repository import ProductRepository
 from app.services.cart.cart_service import CartService
 
+
 class TestGetCart:
     def setup_method(self):
         self.cart_repository = Mock(spec=CartRepository)
         self.product_repository = Mock(spec=ProductRepository)
 
         self.service = CartService(
-            repository=self.cart_repository,
-            product_repository=self.product_repository
+            repository=self.cart_repository, product_repository=self.product_repository
         )
-
 
     def test_missing_cart(self) -> None:
         self.cart_repository.get_cart_details.return_value = None
         result = self.service.get_cart(user_id=1)
-        
+
         assert result.cart.items_count == 0
         assert result.cart.total_price == Decimal('0')
         assert result.items == []
 
-
     def test_empty_cart(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(
-            id=1,
-            user_id=1,
-            items=[]
+            id=1, user_id=1, items=[]
         )
         result = self.service.get_cart(user_id=1)
 
         assert result.cart.items_count == 0
         assert result.cart.total_price == Decimal('0')
         assert result.items == []
-
 
     def test_available_items(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(
@@ -99,7 +94,6 @@ class TestGetCart:
             ),
         ]
 
-    
     def test_unavailable_product(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(
             id=1,
@@ -155,7 +149,6 @@ class TestGetCart:
                 is_available=False,
             ),
         ]
-
 
     def test_insufficient_stock(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(
@@ -213,7 +206,6 @@ class TestGetCart:
             ),
         ]
 
-
     def test_stock_is_none(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(
             id=1,
@@ -270,7 +262,6 @@ class TestGetCart:
             ),
         ]
 
-
     def test_stock_equals_quantity(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(
             id=1,
@@ -326,7 +317,6 @@ class TestGetCart:
                 is_available=True,
             ),
         ]
-
 
     def test_all_items_unavailable(self) -> None:
         self.cart_repository.get_cart_details.return_value = CartDataDto(

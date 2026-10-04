@@ -1,21 +1,18 @@
-
 from app.dto.category.category_details_dto import CategoryDetailsDto
 from app.dto.category.category_dto import CategoryDto
 from app.dto.category.create_category_dto import CreateCategoryDto
 from app.dto.category.update_category_dto import UpdateCategoryDto
-
-from app.exceptions.category.category_not_found_exception import CategoryNotFoundException
+from app.exceptions.category.category_not_found_exception import (
+    CategoryNotFoundException,
+)
 from app.exceptions.product.product_not_found_exception import ProductNotFoundException
-
 from app.repositories.category.category_repository import CategoryRepository
 from app.repositories.product.product_repository import ProductRepository
 
 
 class CategoryService:
     def __init__(
-        self, 
-        repository: CategoryRepository, 
-        product_repository: ProductRepository
+        self, repository: CategoryRepository, product_repository: ProductRepository
     ):
         self.repository = repository
         self.product_repository = product_repository

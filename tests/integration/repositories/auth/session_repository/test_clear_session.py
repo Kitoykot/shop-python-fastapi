@@ -12,7 +12,6 @@ class TestClearSession:
         self.redis_client = redis_client
         self.session_repository = session_repository
 
-
     def test_if_no_session(self) -> None:
         assert self.session_repository.clear_session('refresh-token') is None
 
@@ -36,7 +35,7 @@ class TestClearSession:
             mapping={
                 'user_id': 1,
                 'access_hash': access_hash,
-            }
+            },
         )
         self.redis_client.expire(name=refresh_key, time=60)
 
@@ -44,7 +43,6 @@ class TestClearSession:
 
         assert self.redis_client.exists(access_key) == 0
         assert self.redis_client.exists(refresh_key) == 0
-
 
     def test_clear_session_if_two_sessions(self) -> None:
         access_token_one = 'access-token-one'
@@ -75,7 +73,7 @@ class TestClearSession:
             mapping={
                 'user_id': 1,
                 'access_hash': access_hash_one,
-            }
+            },
         )
         self.redis_client.expire(name=refresh_key_one, time=60)
 
@@ -89,7 +87,7 @@ class TestClearSession:
             mapping={
                 'user_id': 1,
                 'access_hash': access_hash_two,
-            }
+            },
         )
         self.redis_client.expire(name=refresh_key_two, time=60)
 

@@ -23,17 +23,17 @@ class TestFindUserByAccess:
             password_service=self.password_service,
         )
 
-
     def test_if_user_id_is_none(self) -> None:
         self.session_repository.get_user_id_by_access.return_value = None
 
         with pytest.raises(UnauthorizedException):
             self.service.find_user_by_access_token('access-token')
 
-        self.session_repository.get_user_id_by_access.assert_called_once_with('access-token')
+        self.session_repository.get_user_id_by_access.assert_called_once_with(
+            'access-token'
+        )
 
         self.user_repository.find_user_by_id.assert_not_called()
-
 
     def test_if_user_is_none(self) -> None:
         self.session_repository.get_user_id_by_access.return_value = 1
@@ -42,9 +42,10 @@ class TestFindUserByAccess:
         with pytest.raises(UnauthorizedException):
             self.service.find_user_by_access_token('access-token')
 
-        self.session_repository.get_user_id_by_access.assert_called_once_with('access-token')
+        self.session_repository.get_user_id_by_access.assert_called_once_with(
+            'access-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
-
 
     def test_if_user_is_not_active(self) -> None:
         self.session_repository.get_user_id_by_access.return_value = 1
@@ -57,9 +58,10 @@ class TestFindUserByAccess:
         with pytest.raises(UserIsNotActiveException):
             self.service.find_user_by_access_token('access-token')
 
-        self.session_repository.get_user_id_by_access.assert_called_once_with('access-token')
+        self.session_repository.get_user_id_by_access.assert_called_once_with(
+            'access-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
-
 
     def test_get_user_by_access(self) -> None:
         self.session_repository.get_user_id_by_access.return_value = 1
@@ -71,7 +73,9 @@ class TestFindUserByAccess:
 
         result = self.service.find_user_by_access_token('access-token')
 
-        self.session_repository.get_user_id_by_access.assert_called_once_with('access-token')
+        self.session_repository.get_user_id_by_access.assert_called_once_with(
+            'access-token'
+        )
         self.user_repository.find_user_by_id.assert_called_once_with(1)
 
         assert result is not None

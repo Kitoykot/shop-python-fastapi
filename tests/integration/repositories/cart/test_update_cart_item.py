@@ -29,25 +29,18 @@ class TestUpdateCartItem:
         db_session.add(self.product)
         db_session.flush()
 
-
     def test_add_item(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
-        
+
         db_session.add(cart)
         db_session.flush()
 
         self.repository.update_cart_item(
             user_id=self.user.id,
-            dto=UpdateCartItemDto(
-                product_id=self.product.id,
-                count=2
-            )
+            dto=UpdateCartItemDto(product_id=self.product.id, count=2),
         )
 
-        cart_item_statement = (
-            select(CartItem)
-            .where(CartItem.cart_id == cart.id)
-        )
+        cart_item_statement = select(CartItem).where(CartItem.cart_id == cart.id)
         result = db_session.scalar(cart_item_statement)
 
         assert result is not None
@@ -55,29 +48,19 @@ class TestUpdateCartItem:
         assert result.product_id == self.product.id
         assert result.count == 2
 
-
     def test_add_item_if_cart_not_exists(self, db_session: Session) -> None:
         self.repository.update_cart_item(
             user_id=self.user.id,
-            dto=UpdateCartItemDto(
-                product_id=self.product.id,
-                count=4
-            )
+            dto=UpdateCartItemDto(product_id=self.product.id, count=4),
         )
 
-        cart_statement = (
-            select(Cart)
-            .where(Cart.user_id == self.user.id)
-        )
+        cart_statement = select(Cart).where(Cart.user_id == self.user.id)
         cart = db_session.scalar(cart_statement)
 
         assert cart is not None
         assert cart.user_id == self.user.id
 
-        cart_item_statement = (
-            select(CartItem)
-            .where(CartItem.cart_id == cart.id)
-        )
+        cart_item_statement = select(CartItem).where(CartItem.cart_id == cart.id)
         result = db_session.scalar(cart_item_statement)
 
         assert result is not None
@@ -85,33 +68,22 @@ class TestUpdateCartItem:
         assert result.product_id == self.product.id
         assert result.count == 4
 
-
     def test_update_item(self, db_session: Session) -> None:
         cart = Cart(user_id=self.user.id)
 
         db_session.add(cart)
         db_session.flush()
 
-        cart_item = CartItem(
-            cart_id=cart.id,
-            product_id=self.product.id,
-            count=2
-        )
+        cart_item = CartItem(cart_id=cart.id, product_id=self.product.id, count=2)
         db_session.add(cart_item)
         db_session.flush()
 
         self.repository.update_cart_item(
             user_id=self.user.id,
-            dto=UpdateCartItemDto(
-                product_id=self.product.id,
-                count=4
-            )
+            dto=UpdateCartItemDto(product_id=self.product.id, count=4),
         )
 
-        cart_item_statement = (
-            select(CartItem)
-            .where(CartItem.cart_id == cart.id)
-        )
+        cart_item_statement = select(CartItem).where(CartItem.cart_id == cart.id)
         result = db_session.execute(cart_item_statement).scalar_one()
 
         assert result is not None

@@ -1,14 +1,10 @@
 from decimal import Decimal
 
-from fastapi.testclient import TestClient
 import pytest
-
-from app.main import app
-
+from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.dependencies.db.db_dependency import get_db
-
+from app.main import app
 from app.models.cart.cart import Cart
 from app.models.cart.cart_item import CartItem
 from app.models.product.product import Product
@@ -22,7 +18,6 @@ class TestGetCartApi:
             response = client.get('/api/v1/cart')
 
             assert response.status_code == 401
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_empty_cart(self, user: User) -> None:
@@ -38,7 +33,6 @@ class TestGetCartApi:
             },
             'items': [],
         }
-
 
     @pytest.mark.usefixtures('authorized_user')
     def test_cart_with_available_items(self, user: User, db_session: Session) -> None:
@@ -75,7 +69,6 @@ class TestGetCartApi:
         db_session.add_all([cart_item_one, cart_item_two])
         db_session.flush()
 
-
         with TestClient(app) as client:
             response = client.get('/api/v1/cart')
 
@@ -105,11 +98,12 @@ class TestGetCartApi:
                 ],
             }
 
-
     @pytest.mark.usefixtures('authorized_user')
-    def test_cart_if_one_item_is_not_available(self, user: User, db_session: Session) -> None:
+    def test_cart_if_one_item_is_not_available(
+        self, user: User, db_session: Session
+    ) -> None:
         cart = Cart(user_id=user.id)
-        
+
         product_one = Product(
             name='Product 1',
             description='Product 1 description',
@@ -141,7 +135,6 @@ class TestGetCartApi:
 
         db_session.add_all([cart_item_one, cart_item_two])
         db_session.flush()
-
 
         with TestClient(app) as client:
             response = client.get('/api/v1/cart')

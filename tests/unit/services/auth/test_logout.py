@@ -18,7 +18,6 @@ class TestLogout:
             password_service=self.password_service,
         )
 
-
     def test_logout(self) -> None:
         self.service.logout('refresh-token')
 
