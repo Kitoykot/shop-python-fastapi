@@ -27,7 +27,7 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column(
             'status',
-            sa.Enum('new', 'paid', 'cancelled', 'completed', name='order_status'),
+            sa.Enum('new', 'paid', 'cancelled', 'in_transit', 'completed', name='order_status'),
             server_default='new',
             nullable=False,
         ),
