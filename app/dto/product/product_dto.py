@@ -6,7 +6,7 @@ from pydantic import field_serializer
 
 @dataclass
 class ProductDto:
-    id: int | None
+    id: int
     name: str
     description: str | None
     price: Decimal

@@ -1,8 +1,8 @@
 """create orders table
 
-Revision ID: 3f7e969eb6de
+Revision ID: 15280868bca9
 Revises: 831d972d9ff7
-Create Date: 2026-10-04 21:53:29.919467
+Create Date: 2026-10-05 17:43:37.537073
 
 """
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = '3f7e969eb6de'
+revision: str = '15280868bca9'
 down_revision: Union[str, Sequence[str], None] = '831d972d9ff7'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,10 +27,22 @@ def upgrade() -> None:
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column(
             'status',
-            sa.Enum('new', 'paid', 'cancelled', 'in_transit', 'completed', name='order_status'),
+            sa.Enum(
+                'new',
+                'paid',
+                'cancelled',
+                'in_transit',
+                'completed',
+                name='order_status',
+            ),
             server_default='new',
             nullable=False,
         ),
+        sa.Column('user_name', sa.String(length=128), nullable=False),
+        sa.Column('user_phone_number', sa.String(length=16), nullable=False),
+        sa.Column('user_email', sa.String(length=254), nullable=True),
+        sa.Column('user_city', sa.String(length=255), nullable=False),
+        sa.Column('user_address', sa.String(length=500), nullable=False),
         sa.Column('total_price', sa.Numeric(precision=10, scale=2), nullable=False),
         sa.Column(
             'created_at',

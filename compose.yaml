@@ -82,6 +82,11 @@ services:
     depends_on:
       postgres-test:
         condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
 
   migrations-app:
     build: .
@@ -95,6 +100,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config
+      - ./migrations:/app/migrations
+      - ./alembic.ini:/app/alembic.ini
 
   redis-test:
     image: redis:8-alpine

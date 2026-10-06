@@ -1,6 +1,7 @@
-from sqlalchemy import delete, select, update
+from sqlalchemy import Integer, column, delete, select, update, values
 from sqlalchemy.orm import Session
 
+from app.dto.cart.cart_item_for_order_dto import CartItemForOrderDto
 from app.dto.product.create_product_dto import CreateProductDto
 from app.dto.product.product_dto import ProductDto
 from app.dto.product.update_product_dto import UpdateProductDto
@@ -13,8 +14,7 @@ class ProductRepository:
 
     def get_active_products(self) -> list[ProductDto]:
         statement = select(Product).where(Product.active())
-
-        products = list(self.session.scalars(statement).all())
+        products = self.session.scalars(statement).all()
 
         return [self.__to_dto(product) for product in products]
 
@@ -61,6 +61,38 @@ class ProductRepository:
 
         self.session.execute(statement)
         self.session.commit()
+
+
+    def get_products_by_ids_list(self, product_ids: list[int]) -> list[ProductDto]:
+        products = self.session.scalars(
+            select(Product)
+            .where(Product.id.in_(product_ids))
+            .order_by(Product.id)
+            .with_for_update()
+        ).all()
+
+        return [self.__to_dto(product) for product in products]
+
+
+    def decrease_counts_during_transaction(self, items: list[CartItemForOrderDto]) -> None:
+        if len(items) == 0:
+            return
+        
+        ordered = values(
+            column('product_id', Integer),
+            column('count', Integer),
+            name='ordered',
+        ).data([
+            (item.product_id, item.count)
+            for item in items
+        ])
+
+        self.session.execute(
+            update(Product)
+            .where(Product.id == ordered.columns.product_id)
+            .values(count=Product.count - ordered.columns.count)
+        )
+    
 
     def __to_dto(self, product: Product) -> ProductDto:
         return ProductDto(

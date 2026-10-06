@@ -1,7 +1,7 @@
 """create order_items table
 
-Revision ID: a8d92e71c640
-Revises: 3f7e969eb6de
+Revision ID: 9b624e0f13ad
+Revises: 15280868bca9
 """
 
 from typing import Sequence, Union
@@ -9,8 +9,8 @@ from typing import Sequence, Union
 import sqlalchemy as sa
 from alembic import op
 
-revision: str = 'a8d92e71c640'
-down_revision: Union[str, Sequence[str], None] = '3f7e969eb6de'
+revision: str = '9b624e0f13ad'
+down_revision: Union[str, Sequence[str], None] = '15280868bca9'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

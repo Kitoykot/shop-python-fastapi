@@ -2,6 +2,8 @@ from sqlalchemy import delete, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session, selectinload
 
+from app.dto.cart.cart_for_order_dto import CartForOrderDto
+from app.dto.cart.cart_item_for_order_dto import CartItemForOrderDto
 from app.dto.cart.data.cart_data_dto import CartDataDto
 from app.dto.cart.data.cart_item_data_dto import CartItemDataDto
 from app.dto.cart.update_cart_item_dto import UpdateCartItemDto
@@ -60,6 +62,11 @@ class CartRepository:
         self.session.commit()
 
     def delete_all_cart_items(self, user_id: int) -> None:
+        self.delete_all_cart_items_during_transaction(user_id)
+        self.session.commit()
+
+
+    def delete_all_cart_items_during_transaction(self, user_id: int) -> None:
         cart_id = self.__get_cart_id_or_none(user_id)
 
         if cart_id is None:
@@ -67,7 +74,46 @@ class CartRepository:
 
         statement = delete(CartItem).where(CartItem.cart_id == cart_id)
         self.session.execute(statement)
-        self.session.commit()
+
+
+    def get_cart_for_order(self, user_id: int) -> CartForOrderDto | None:
+        cart = self.session.scalar(
+            select(Cart)
+            .where(Cart.user_id == user_id)
+        )
+
+        if cart is None:
+            return None
+
+        items = self.session.scalars(
+            select(CartItem)
+            .where(CartItem.cart_id == cart.id)
+        ).all()
+
+        return self.__to_order_dto(cart=cart, items=items)
+    
+
+    def __get_or_create_cart(self, user_id: int) -> Cart:
+        statement = (
+            insert(Cart)
+            .values(user_id=user_id)
+            .on_conflict_do_nothing(index_elements=['user_id'])
+            .returning(Cart)
+        )
+
+        cart = self.session.scalar(statement)
+
+        if cart is not None:
+            return cart
+
+        existing_cart_statement = select(Cart).where(Cart.user_id == user_id)
+        return self.session.execute(existing_cart_statement).scalar_one()
+
+    def __get_cart_id_or_none(self, user_id: int) -> int | None:
+        statement = select(Cart.id).where(Cart.user_id == user_id)
+
+        return self.session.scalar(statement)
+
 
     def __to_dto(self, cart: Cart) -> CartDataDto:
         return CartDataDto(
@@ -94,23 +140,22 @@ class CartRepository:
             is_available=product.is_available,
         )
 
-    def __get_or_create_cart(self, user_id: int) -> Cart:
-        statement = (
-            insert(Cart)
-            .values(user_id=user_id)
-            .on_conflict_do_nothing(index_elements=['user_id'])
-            .returning(Cart)
+
+    def __to_order_dto(self, cart: Cart, items: list[CartItem]) -> CartForOrderDto:
+        return CartForOrderDto(
+            id=cart.id,
+            user_id=cart.user_id,
+            items=[
+                self.__to_cart_item_for_order_dto(item)
+                for item in items
+            ]
         )
 
-        cart = self.session.scalar(statement)
 
-        if cart is not None:
-            return cart
-
-        existing_cart_statement = select(Cart).where(Cart.user_id == user_id)
-        return self.session.execute(existing_cart_statement).scalar_one()
-
-    def __get_cart_id_or_none(self, user_id: int) -> int | None:
-        statement = select(Cart.id).where(Cart.user_id == user_id)
-
-        return self.session.scalar(statement)
+    def __to_cart_item_for_order_dto(self, item: CartItem) -> CartItemForOrderDto:
+        return CartItemForOrderDto(
+            id=item.id,
+            cart_id=item.cart_id,
+            count=item.count,
+            product_id=item.product_id,
+        )
