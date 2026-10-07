@@ -116,6 +116,25 @@ services:
       interval: 30s
       timeout: 3s
       retries: 3
+  
+  scheduler:
+    build: .
+    command: python -m app.commands.scheduler
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations-app:
+        condition: service_completed_successfully
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config
 
 volumes:
   postgres-data:

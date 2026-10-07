@@ -2,6 +2,7 @@ from sqlalchemy import Integer, column, delete, select, update, values
 from sqlalchemy.orm import Session
 
 from app.dto.cart.cart_item_for_order_dto import CartItemForOrderDto
+from app.dto.order.order_item_dto import OrderItemDto
 from app.dto.product.create_product_dto import CreateProductDto
 from app.dto.product.product_dto import ProductDto
 from app.dto.product.update_product_dto import UpdateProductDto
@@ -91,6 +92,30 @@ class ProductRepository:
             update(Product)
             .where(Product.id == ordered.columns.product_id)
             .values(count=Product.count - ordered.columns.count)
+        )
+
+
+    def increase_counts_during_transaction(self, items: list[OrderItemDto]) -> None:
+        if len(items) == 0:
+            return
+
+        counts_by_product_id: dict[int, int] = {}
+
+        for item in items:
+            counts_by_product_id[item.product_id] = (
+                counts_by_product_id.get(item.product_id, 0) + item.count
+            )
+
+        ordered = values(
+            column('product_id', Integer),
+            column('count', Integer),
+            name='ordered'
+        ).data(list(counts_by_product_id.items()))
+
+        self.session.execute(
+            update(Product)
+            .where(Product.id == ordered.columns.product_id)
+            .values(count=Product.count + ordered.columns.count)
         )
     
 
