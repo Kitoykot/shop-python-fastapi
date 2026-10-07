@@ -7,9 +7,8 @@ from redis.exceptions import WatchError
 
 from app.dto.auth.token_info_dto import TokenInfoDto
 
-ACCESS_TOKEN_EXPIRES_IN_SECONDS = (
-    60 * 60 * 24 * 7 # по идее должно быть 20 минут, но просто чтобы не рефрешить каждый раз
-)
+# по идее access должен сдохнуть черех 20 минут, но просто чтобы не рефрешить каждый раз
+ACCESS_TOKEN_EXPIRES_IN_SECONDS = 60 * 60 * 24 * 7
 REFRESH_TOKEN_EXPIRES_IN_SECONDS = 60 * 60 * 24 * 7
 
 
