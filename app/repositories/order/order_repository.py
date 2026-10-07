@@ -16,7 +16,6 @@ class OrderRepository:
     def __init__(self, session: Session):
         self.session = session
 
-
     def create_order_during_transaction(self, dto: OrderCreateDataDto) -> None:
         order = Order(
             user_id=dto.user_id,
@@ -28,24 +27,17 @@ class OrderRepository:
             user_address=dto.user_address,
             total_price=dto.total_price,
             created_at=datetime.now(UTC),
-            items=[
-                self.__to_order_item_model(item_dto=item) 
-                for item in dto.items
-            ]
+            items=[self.__to_order_item_model(item_dto=item) for item in dto.items],
         )
 
         self.session.add(order)
 
-
     def get_expired_orders(self) -> list[OrderDto]:
         cutoff = datetime.now(UTC) - timedelta(hours=1)
-        
+
         statement = (
             select(Order)
-            .where(
-                Order.status == OrderStatus.NEW,
-                Order.created_at < cutoff
-            )
+            .where(Order.status == OrderStatus.NEW, Order.created_at < cutoff)
             .options(selectinload(Order.items))
             .order_by(Order.id)
             .with_for_update()
@@ -54,14 +46,10 @@ class OrderRepository:
         orders = self.session.scalars(statement).all()
         return [self.__to_dto(order) for order in orders]
 
-
     def cancel_expired_orders_during_transaction(self, ids: list[int]) -> None:
         self.session.execute(
-            update(Order)
-            .where(Order.id.in_(ids))
-            .values(status=OrderStatus.CANCELLED)
+            update(Order).where(Order.id.in_(ids)).values(status=OrderStatus.CANCELLED)
         )
-
 
     def __to_order_item_model(self, item_dto: CreateOrderItemDto) -> OrderItem:
         return OrderItem(
@@ -70,7 +58,6 @@ class OrderRepository:
             price=item_dto.price,
             count=item_dto.count,
         )
-
 
     def __to_dto(self, order: Order) -> OrderDto:
         return OrderDto(
@@ -84,12 +71,8 @@ class OrderRepository:
             user_address=order.user_address,
             total_price=order.total_price,
             created_at=order.created_at.isoformat(),
-            items=[
-                self.__to_order_item_dto(item) 
-                for item in order.items
-            ],
+            items=[self.__to_order_item_dto(item) for item in order.items],
         )
-
 
     def __to_order_item_dto(self, item: OrderItem) -> OrderItemDto:
         return OrderItemDto(

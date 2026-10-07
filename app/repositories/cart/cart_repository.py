@@ -65,7 +65,6 @@ class CartRepository:
         self.delete_all_cart_items_during_transaction(user_id)
         self.session.commit()
 
-
     def delete_all_cart_items_during_transaction(self, user_id: int) -> None:
         cart_id = self.__get_cart_id_or_none(user_id)
 
@@ -75,23 +74,17 @@ class CartRepository:
         statement = delete(CartItem).where(CartItem.cart_id == cart_id)
         self.session.execute(statement)
 
-
     def get_cart_for_order(self, user_id: int) -> CartForOrderDto | None:
-        cart = self.session.scalar(
-            select(Cart)
-            .where(Cart.user_id == user_id)
-        )
+        cart = self.session.scalar(select(Cart).where(Cart.user_id == user_id))
 
         if cart is None:
             return None
 
         items = self.session.scalars(
-            select(CartItem)
-            .where(CartItem.cart_id == cart.id)
+            select(CartItem).where(CartItem.cart_id == cart.id)
         ).all()
 
         return self.__to_order_dto(cart=cart, items=items)
-    
 
     def __get_or_create_cart(self, user_id: int) -> Cart:
         statement = (
@@ -113,7 +106,6 @@ class CartRepository:
         statement = select(Cart.id).where(Cart.user_id == user_id)
 
         return self.session.scalar(statement)
-
 
     def __to_dto(self, cart: Cart) -> CartDataDto:
         return CartDataDto(
@@ -140,17 +132,12 @@ class CartRepository:
             is_available=product.is_available,
         )
 
-
     def __to_order_dto(self, cart: Cart, items: list[CartItem]) -> CartForOrderDto:
         return CartForOrderDto(
             id=cart.id,
             user_id=cart.user_id,
-            items=[
-                self.__to_cart_item_for_order_dto(item)
-                for item in items
-            ]
+            items=[self.__to_cart_item_for_order_dto(item) for item in items],
         )
-
 
     def __to_cart_item_for_order_dto(self, item: CartItem) -> CartItemForOrderDto:
         return CartItemForOrderDto(

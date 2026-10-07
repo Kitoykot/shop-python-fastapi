@@ -21,4 +21,3 @@ class OrderStatus(Enum):
                 return 'В пути'
             case OrderStatus.COMPLETED:
                 return 'Выполнен'
-            

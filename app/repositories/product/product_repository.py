@@ -63,7 +63,6 @@ class ProductRepository:
         self.session.execute(statement)
         self.session.commit()
 
-
     def get_products_by_ids_list(self, product_ids: list[int]) -> list[ProductDto]:
         products = self.session.scalars(
             select(Product)
@@ -74,26 +73,23 @@ class ProductRepository:
 
         return [self.__to_dto(product) for product in products]
 
-
-    def decrease_counts_during_transaction(self, items: list[CartItemForOrderDto]) -> None:
+    def decrease_counts_during_transaction(
+        self, items: list[CartItemForOrderDto]
+    ) -> None:
         if len(items) == 0:
             return
-        
+
         ordered = values(
             column('product_id', Integer),
             column('count', Integer),
             name='ordered',
-        ).data([
-            (item.product_id, item.count)
-            for item in items
-        ])
+        ).data([(item.product_id, item.count) for item in items])
 
         self.session.execute(
             update(Product)
             .where(Product.id == ordered.columns.product_id)
             .values(count=Product.count - ordered.columns.count)
         )
-
 
     def increase_counts_during_transaction(self, items: list[OrderItemDto]) -> None:
         if len(items) == 0:
@@ -107,9 +103,7 @@ class ProductRepository:
             )
 
         ordered = values(
-            column('product_id', Integer),
-            column('count', Integer),
-            name='ordered'
+            column('product_id', Integer), column('count', Integer), name='ordered'
         ).data(list(counts_by_product_id.items()))
 
         self.session.execute(
@@ -117,7 +111,6 @@ class ProductRepository:
             .where(Product.id == ordered.columns.product_id)
             .values(count=Product.count + ordered.columns.count)
         )
-    
 
     def __to_dto(self, product: Product) -> ProductDto:
         return ProductDto(

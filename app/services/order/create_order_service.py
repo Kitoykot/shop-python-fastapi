@@ -21,17 +21,16 @@ from app.repositories.product.product_repository import ProductRepository
 
 class CreateOrderService:
     def __init__(
-            self, 
-            repository: OrderRepository,
-            cart_repository: CartRepository,
-            product_repository: ProductRepository,
-            unit_of_work: UnitOfWork,
-        ):
-            self.repository = repository
-            self.cart_repository = cart_repository
-            self.product_repository = product_repository
-            self.unit_of_work = unit_of_work
-
+        self,
+        repository: OrderRepository,
+        cart_repository: CartRepository,
+        product_repository: ProductRepository,
+        unit_of_work: UnitOfWork,
+    ):
+        self.repository = repository
+        self.cart_repository = cart_repository
+        self.product_repository = product_repository
+        self.unit_of_work = unit_of_work
 
     def create_order(self, user_id: int, dto: CreateOrderDto) -> None:
         with self.unit_of_work:
@@ -46,24 +45,22 @@ class CreateOrderService:
             if set(product_ids) != {product.id for product in products}:
                 raise SomeItemsAreNotAvailableException()
 
-            self.__check_items_count_before_order(cart_items=cart.items, products=products)
+            self.__check_items_count_before_order(
+                cart_items=cart.items, products=products
+            )
 
             create_order_data_dto = self.__to_order_create_data_dto(
-                user_id=user_id, 
-                dto=dto,
-                cart_items=cart.items, 
-                products=products
+                user_id=user_id, dto=dto, cart_items=cart.items, products=products
             )
-            
+
             self.repository.create_order_during_transaction(create_order_data_dto)
             self.product_repository.decrease_counts_during_transaction(cart.items)
             self.cart_repository.delete_all_cart_items_during_transaction(user_id)
 
-
     def __check_items_count_before_order(
-            self, 
-            cart_items: list[CartItemForOrderDto], 
-            products: list[ProductDto],
+        self,
+        cart_items: list[CartItemForOrderDto],
+        products: list[ProductDto],
     ) -> None:
         products_by_id = self.__get_products_dict_list(products)
 
@@ -76,13 +73,12 @@ class CreateOrderService:
             if item.count > product.count:
                 raise ItemCountException(product.name)
 
-
     def __to_order_create_data_dto(
-            self,
-            user_id: int,
-            dto: CreateOrderDto, 
-            products: list[ProductDto],
-            cart_items: list[CartItemForOrderDto],
+        self,
+        user_id: int,
+        dto: CreateOrderDto,
+        products: list[ProductDto],
+        cart_items: list[CartItemForOrderDto],
     ) -> OrderCreateDataDto:
         return OrderCreateDataDto(
             user_id=user_id,
@@ -91,10 +87,13 @@ class CreateOrderService:
             user_email=dto.user_email,
             user_city=dto.user_city,
             user_address=dto.user_address,
-            total_price=self.__get_total_price(products=products, cart_items=cart_items),
-            items=self.__get_create_order_item_dtos(products=products, cart_items=cart_items),
+            total_price=self.__get_total_price(
+                products=products, cart_items=cart_items
+            ),
+            items=self.__get_create_order_item_dtos(
+                products=products, cart_items=cart_items
+            ),
         )
-
 
     def __get_total_price(
         self,
@@ -109,7 +108,6 @@ class CreateOrderService:
             total_price += product.price * item.count
 
         return total_price
-
 
     def __get_create_order_item_dtos(
         self,
@@ -132,6 +130,7 @@ class CreateOrderService:
 
         return items
 
-
-    def __get_products_dict_list(self, products: list[ProductDto]) -> dict[int, ProductDto]:
+    def __get_products_dict_list(
+        self, products: list[ProductDto]
+    ) -> dict[int, ProductDto]:
         return {product.id: product for product in products}
