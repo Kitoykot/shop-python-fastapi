@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, Query, status
 
 from app.dependencies.auth.current_user_dependency import get_current_user
