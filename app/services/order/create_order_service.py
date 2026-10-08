@@ -1,11 +1,11 @@
 from decimal import Decimal
 
 from app.database.unit_of_work import UnitOfWork
-from app.dto.cart.cart_item_for_order_dto import CartItemForOrderDto
-from app.dto.order.create_order_dto import CreateOrderDto
-from app.dto.order.create_order_item_dto import CreateOrderItemDto
-from app.dto.order.order_create_data_dto import OrderCreateDataDto
-from app.dto.product.product_dto import ProductDto
+from app.dto.cart.read.data.cart_item_for_order_data_dto import CartItemForOrderDataDto
+from app.dto.order.create.create_order_dto import CreateOrderDto
+from app.dto.order.create.create_order_item_dto import CreateOrderItemDto
+from app.dto.order.create.order_create_data_dto import OrderCreateDataDto
+from app.dto.product.read.data.product_data_dto import ProductDataDto
 from app.exceptions.order.empty_cart_exception import EmptyCartException
 from app.exceptions.order.item_count_exception import ItemCountException
 from app.exceptions.order.item_is_not_available_exception import (
@@ -59,8 +59,8 @@ class CreateOrderService:
 
     def __check_items_count_before_order(
         self,
-        cart_items: list[CartItemForOrderDto],
-        products: list[ProductDto],
+        cart_items: list[CartItemForOrderDataDto],
+        products: list[ProductDataDto],
     ) -> None:
         products_by_id = self.__get_products_dict_list(products)
 
@@ -77,8 +77,8 @@ class CreateOrderService:
         self,
         user_id: int,
         dto: CreateOrderDto,
-        products: list[ProductDto],
-        cart_items: list[CartItemForOrderDto],
+        products: list[ProductDataDto],
+        cart_items: list[CartItemForOrderDataDto],
     ) -> OrderCreateDataDto:
         return OrderCreateDataDto(
             user_id=user_id,
@@ -97,8 +97,8 @@ class CreateOrderService:
 
     def __get_total_price(
         self,
-        products: list[ProductDto],
-        cart_items: list[CartItemForOrderDto],
+        products: list[ProductDataDto],
+        cart_items: list[CartItemForOrderDataDto],
     ) -> Decimal:
         total_price = Decimal('0')
         products_by_id = self.__get_products_dict_list(products)
@@ -111,8 +111,8 @@ class CreateOrderService:
 
     def __get_create_order_item_dtos(
         self,
-        products: list[ProductDto],
-        cart_items: list[CartItemForOrderDto],
+        products: list[ProductDataDto],
+        cart_items: list[CartItemForOrderDataDto],
     ) -> list[CreateOrderItemDto]:
         products_by_id = self.__get_products_dict_list(products)
         items = []
@@ -131,6 +131,6 @@ class CreateOrderService:
         return items
 
     def __get_products_dict_list(
-        self, products: list[ProductDto]
-    ) -> dict[int, ProductDto]:
+        self, products: list[ProductDataDto]
+    ) -> dict[int, ProductDataDto]:
         return {product.id: product for product in products}

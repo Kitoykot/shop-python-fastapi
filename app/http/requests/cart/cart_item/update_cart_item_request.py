@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app.dto.cart.update_cart_item_dto import UpdateCartItemDto
+from app.dto.cart.update.update_cart_item_dto import UpdateCartItemDto
 
 
 class UpdateCartItemRequest(BaseModel):

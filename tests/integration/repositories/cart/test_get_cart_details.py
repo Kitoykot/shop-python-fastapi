@@ -3,8 +3,8 @@ from decimal import Decimal
 import pytest
 from sqlalchemy.orm import Session
 
-from app.dto.cart.data.cart_item_data_dto import CartItemDataDto
-from app.dto.product.product_dto import ProductDto
+from app.dto.cart.read.data.cart_item_data_dto import CartItemDataDto
+from app.dto.product.read.data.product_data_dto import ProductDataDto
 from app.enums.user.user_role import UserRole
 from app.models.cart.cart import Cart
 from app.models.cart.cart_item import CartItem
@@ -92,7 +92,7 @@ class TestGetCartDetails:
             CartItemDataDto(
                 id=cart_item_one.id,
                 count=cart_item_one.count,
-                product=ProductDto(
+                product=ProductDataDto(
                     id=product_one.id,
                     name=product_one.name,
                     description=product_one.description,
@@ -105,7 +105,7 @@ class TestGetCartDetails:
             CartItemDataDto(
                 id=cart_item_two.id,
                 count=cart_item_two.count,
-                product=ProductDto(
+                product=ProductDataDto(
                     id=product_two.id,
                     name=product_two.name,
                     description=product_two.description,

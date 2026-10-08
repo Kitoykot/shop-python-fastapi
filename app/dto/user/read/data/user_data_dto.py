@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class UserDto:
+class UserDataDto:
     id: int
     password_hash: str
     is_active: bool

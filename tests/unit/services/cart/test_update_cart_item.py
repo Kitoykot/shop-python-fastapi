@@ -3,8 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.dto.cart.update_cart_item_dto import UpdateCartItemDto
-from app.dto.product.product_dto import ProductDto
+from app.dto.cart.update.update_cart_item_dto import UpdateCartItemDto
+from app.dto.product.read.data.product_data_dto import ProductDataDto
 from app.exceptions.product.product_not_found_exception import ProductNotFoundException
 from app.repositories.cart.cart_repository import CartRepository
 from app.repositories.product.product_repository import ProductRepository
@@ -33,7 +33,7 @@ class TestUpdateCartItem:
         self.cart_repository.update_cart_item.assert_not_called()
 
     def test_if_product_is_not_active(self) -> None:
-        self.product_repository.get_product_details.return_value = ProductDto(
+        self.product_repository.get_product_details.return_value = ProductDataDto(
             id=1,
             name='Product 1',
             description='',
@@ -54,7 +54,7 @@ class TestUpdateCartItem:
         self.cart_repository.update_cart_item.assert_not_called()
 
     def test_success_update(self) -> None:
-        self.product_repository.get_product_details.return_value = ProductDto(
+        self.product_repository.get_product_details.return_value = ProductDataDto(
             id=1,
             name='Product 1',
             description='',
@@ -77,7 +77,7 @@ class TestUpdateCartItem:
         )
 
     def test_success_update_if_request_count_is_bigger(self) -> None:
-        self.product_repository.get_product_details.return_value = ProductDto(
+        self.product_repository.get_product_details.return_value = ProductDataDto(
             id=1,
             name='Product 1',
             description='',

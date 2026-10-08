@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from app.dto.auth.user_register_dto import UserRegisterDto
+from app.dto.auth.register.user_register_dto import UserRegisterDto
 
 
 class UserRegisterRequest(BaseModel):

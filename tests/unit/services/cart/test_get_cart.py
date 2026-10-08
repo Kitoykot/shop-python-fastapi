@@ -1,10 +1,10 @@
 from decimal import Decimal
 from unittest.mock import Mock
 
-from app.dto.cart.cart_item_dto import CartItemDto
-from app.dto.cart.data.cart_data_dto import CartDataDto
-from app.dto.cart.data.cart_item_data_dto import CartItemDataDto
-from app.dto.product.product_dto import ProductDto
+from app.dto.cart.read.cart_item_dto import CartItemDto
+from app.dto.cart.read.data.cart_data_dto import CartDataDto
+from app.dto.cart.read.data.cart_item_data_dto import CartItemDataDto
+from app.dto.product.read.data.product_data_dto import ProductDataDto
 from app.repositories.cart.cart_repository import CartRepository
 from app.repositories.product.product_repository import ProductRepository
 from app.services.cart.cart_service import CartService
@@ -45,7 +45,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=1,
                     count=2,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=2,
                         name='Product 1',
                         description='',
@@ -58,7 +58,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=3,
                     count=4,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=4,
                         name='Product 2',
                         description='',
@@ -102,7 +102,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=1,
                     count=2,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=1,
                         name='Product 1',
                         description='',
@@ -115,7 +115,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=2,
                     count=4,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=2,
                         name='Product 2',
                         description='',
@@ -158,7 +158,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=1,
                     count=2,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=1,
                         name='Product 1',
                         description='',
@@ -171,7 +171,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=2,
                     count=4,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=2,
                         name='Product 2',
                         description='',
@@ -214,7 +214,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=1,
                     count=2,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=1,
                         name='Product 1',
                         description='',
@@ -227,7 +227,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=2,
                     count=4,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=2,
                         name='Product 2',
                         description='',
@@ -270,7 +270,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=1,
                     count=2,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=1,
                         name='Product 1',
                         description='',
@@ -283,7 +283,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=2,
                     count=4,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=2,
                         name='Product 2',
                         description='',
@@ -326,7 +326,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=1,
                     count=2,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=1,
                         name='Product 1',
                         description='',
@@ -339,7 +339,7 @@ class TestGetCart:
                 CartItemDataDto(
                     id=2,
                     count=4,
-                    product=ProductDto(
+                    product=ProductDataDto(
                         id=2,
                         name='Product 2',
                         description='',

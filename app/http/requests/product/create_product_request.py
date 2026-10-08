@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic import BaseModel, Field
 
-from app.dto.product.create_product_dto import CreateProductDto
+from app.dto.product.create.create_product_dto import CreateProductDto
 
 
 class CreateProductRequest(BaseModel):

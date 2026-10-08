@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.dto.user.user_dto import UserDto
+from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.exceptions.auth.unauthorized_exception import UnauthorizedException
 from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
 from app.repositories.auth.session_repository import SessionRepository
@@ -49,7 +49,7 @@ class TestFindUserByAccess:
 
     def test_if_user_is_not_active(self) -> None:
         self.session_repository.get_user_id_by_access.return_value = 1
-        self.user_repository.find_user_by_id.return_value = UserDto(
+        self.user_repository.find_user_by_id.return_value = UserDataDto(
             id=1,
             password_hash='password-hash',
             is_active=False,
@@ -65,7 +65,7 @@ class TestFindUserByAccess:
 
     def test_get_user_by_access(self) -> None:
         self.session_repository.get_user_id_by_access.return_value = 1
-        self.user_repository.find_user_by_id.return_value = UserDto(
+        self.user_repository.find_user_by_id.return_value = UserDataDto(
             id=1,
             password_hash='password-hash',
             is_active=True,

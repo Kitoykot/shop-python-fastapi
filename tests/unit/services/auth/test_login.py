@@ -2,9 +2,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.dto.auth.token_info_dto import TokenInfoDto
-from app.dto.auth.user_login_dto import UserLoginDto
-from app.dto.user.user_dto import UserDto
+from app.dto.auth.login.user_login_dto import UserLoginDto
+from app.dto.auth.tokens.token_info_dto import TokenInfoDto
+from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
 from app.exceptions.auth.wrong_email_or_password_exception import (
     WrongEmailOrPasswordException,
@@ -41,7 +41,7 @@ class TestLogin:
         self.session_repository.create_token.assert_not_called()
 
     def test_if_user_password_is_not_verified(self) -> None:
-        user_dto = UserDto(
+        user_dto = UserDataDto(
             id=1,
             password_hash='password_hash',
             is_active=True,
@@ -63,7 +63,7 @@ class TestLogin:
         self.session_repository.create_token.assert_not_called()
 
     def test_if_user_is_not_active(self) -> None:
-        user_dto = UserDto(
+        user_dto = UserDataDto(
             id=1,
             password_hash='password_hash',
             is_active=False,
@@ -85,7 +85,7 @@ class TestLogin:
         self.session_repository.create_token.assert_not_called()
 
     def test_successful_login(self) -> None:
-        user_dto = UserDto(
+        user_dto = UserDataDto(
             id=1,
             password_hash='password_hash',
             is_active=True,

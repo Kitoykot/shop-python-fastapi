@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 
-from app.dto.auth.user_login_dto import UserLoginDto
+from app.dto.auth.login.user_login_dto import UserLoginDto
 
 
 class UserLoginRequest(BaseModel):

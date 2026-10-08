@@ -1,8 +1,8 @@
 from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
-from app.dto.auth.user_create_dto import UserCreateDto
-from app.dto.user.user_dto import UserDto
+from app.dto.auth.register.user_create_dto import UserCreateDto
+from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.enums.user.user_role import UserRole
 from app.models.user.user import User
 
@@ -36,7 +36,7 @@ class UserRepository:
         self.session.add(user)
         self.session.commit()
 
-    def find_user_by_email(self, email: str) -> UserDto | None:
+    def find_user_by_email(self, email: str) -> UserDataDto | None:
         statement = select(User).where(User.email == email)
         user = self.session.scalar(statement)
 
@@ -45,7 +45,7 @@ class UserRepository:
 
         return self.__to_dto(user)
 
-    def find_user_by_id(self, user_id: int) -> UserDto | None:
+    def find_user_by_id(self, user_id: int) -> UserDataDto | None:
         statement = select(User).where(User.id == user_id)
         user = self.session.scalar(statement)
 
@@ -54,7 +54,7 @@ class UserRepository:
 
         return self.__to_dto(user)
 
-    def __to_dto(self, user: User) -> UserDto:
-        return UserDto(
+    def __to_dto(self, user: User) -> UserDataDto:
+        return UserDataDto(
             id=user.id, password_hash=user.password_hash, is_active=user.is_active
         )

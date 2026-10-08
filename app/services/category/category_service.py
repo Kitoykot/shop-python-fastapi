@@ -1,7 +1,7 @@
-from app.dto.category.category_details_dto import CategoryDetailsDto
-from app.dto.category.category_dto import CategoryDto
-from app.dto.category.create_category_dto import CreateCategoryDto
-from app.dto.category.update_category_dto import UpdateCategoryDto
+from app.dto.category.create.create_category_dto import CreateCategoryDto
+from app.dto.category.read.category_details_dto import CategoryDetailsDto
+from app.dto.category.read.data.category_data_dto import CategoryDataDto
+from app.dto.category.update.update_category_dto import UpdateCategoryDto
 from app.exceptions.category.category_not_found_exception import (
     CategoryNotFoundException,
 )
@@ -17,7 +17,7 @@ class CategoryService:
         self.repository = repository
         self.product_repository = product_repository
 
-    def get_active_categories(self) -> list[CategoryDto]:
+    def get_active_categories(self) -> list[CategoryDataDto]:
         return self.repository.get_active_categories()
 
     def get_category_details(self, id: int) -> CategoryDetailsDto:

@@ -1,11 +1,11 @@
 from sqlalchemy import Integer, column, delete, select, update, values
 from sqlalchemy.orm import Session
 
-from app.dto.cart.cart_item_for_order_dto import CartItemForOrderDto
-from app.dto.order.order_item_dto import OrderItemDto
-from app.dto.product.create_product_dto import CreateProductDto
-from app.dto.product.product_dto import ProductDto
-from app.dto.product.update_product_dto import UpdateProductDto
+from app.dto.cart.read.data.cart_item_for_order_data_dto import CartItemForOrderDataDto
+from app.dto.order.read.data.order_item_data_dto import OrderItemDataDto
+from app.dto.product.create.create_product_dto import CreateProductDto
+from app.dto.product.read.data.product_data_dto import ProductDataDto
+from app.dto.product.update.update_product_dto import UpdateProductDto
 from app.models.product.product import Product
 
 
@@ -13,13 +13,13 @@ class ProductRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def get_active_products(self) -> list[ProductDto]:
+    def get_active_products(self) -> list[ProductDataDto]:
         statement = select(Product).where(Product.active())
         products = self.session.scalars(statement).all()
 
         return [self.__to_dto(product) for product in products]
 
-    def get_products_by_category(self, category_id: int) -> list[ProductDto]:
+    def get_products_by_category(self, category_id: int) -> list[ProductDataDto]:
         statement = (
             select(Product)
             .where(Product.categories.any(id=category_id), Product.active())
@@ -30,7 +30,7 @@ class ProductRepository:
 
         return [self.__to_dto(product) for product in products]
 
-    def get_product_details(self, id: int) -> ProductDto | None:
+    def get_product_details(self, id: int) -> ProductDataDto | None:
         statement = select(Product).where(Product.id == (id))
 
         product = self.session.scalars(statement).first()
@@ -63,7 +63,7 @@ class ProductRepository:
         self.session.execute(statement)
         self.session.commit()
 
-    def get_products_by_ids_list(self, product_ids: list[int]) -> list[ProductDto]:
+    def get_products_by_ids_list(self, product_ids: list[int]) -> list[ProductDataDto]:
         products = self.session.scalars(
             select(Product)
             .where(Product.id.in_(product_ids))
@@ -74,7 +74,7 @@ class ProductRepository:
         return [self.__to_dto(product) for product in products]
 
     def decrease_counts_during_transaction(
-        self, items: list[CartItemForOrderDto]
+        self, items: list[CartItemForOrderDataDto]
     ) -> None:
         if len(items) == 0:
             return
@@ -91,7 +91,7 @@ class ProductRepository:
             .values(count=Product.count - ordered.columns.count)
         )
 
-    def increase_counts_during_transaction(self, items: list[OrderItemDto]) -> None:
+    def increase_counts_during_transaction(self, items: list[OrderItemDataDto]) -> None:
         if len(items) == 0:
             return
 
@@ -112,8 +112,8 @@ class ProductRepository:
             .values(count=Product.count + ordered.columns.count)
         )
 
-    def __to_dto(self, product: Product) -> ProductDto:
-        return ProductDto(
+    def __to_dto(self, product: Product) -> ProductDataDto:
+        return ProductDataDto(
             id=product.id,
             name=product.name,
             description=product.description,

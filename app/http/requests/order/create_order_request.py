@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-from app.dto.order.create_order_dto import CreateOrderDto
+from app.dto.order.create.create_order_dto import CreateOrderDto
 
 
 class CreateOrderRequest(BaseModel):

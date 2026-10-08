@@ -2,6 +2,6 @@ from dataclasses import dataclass
 
 
 @dataclass
-class CategoryDto:
+class CategoryDataDto:
     id: int | None
     name: str

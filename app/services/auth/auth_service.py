@@ -1,8 +1,8 @@
-from app.dto.auth.token_info_dto import TokenInfoDto
-from app.dto.auth.user_create_dto import UserCreateDto
-from app.dto.auth.user_login_dto import UserLoginDto
-from app.dto.auth.user_register_dto import UserRegisterDto
-from app.dto.user.user_dto import UserDto
+from app.dto.auth.login.user_login_dto import UserLoginDto
+from app.dto.auth.register.user_create_dto import UserCreateDto
+from app.dto.auth.register.user_register_dto import UserRegisterDto
+from app.dto.auth.tokens.token_info_dto import TokenInfoDto
+from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.exceptions.auth.email_is_already_exists_exception import EmailIsAlreadyExists
 from app.exceptions.auth.phone_is_already_exists_exception import (
     PhoneNumberIsAlreadyExists,
@@ -65,7 +65,7 @@ class AuthService:
 
         return self.session_repository.create_token(user.id)
 
-    def find_user_by_access_token(self, access_token: str) -> UserDto:
+    def find_user_by_access_token(self, access_token: str) -> UserDataDto:
         user_id = self.session_repository.get_user_id_by_access(access_token)
 
         return self.__find_and_check_user_by_user_id(user_id)
@@ -86,7 +86,7 @@ class AuthService:
     def logout(self, refresh_token: str) -> None:
         self.session_repository.clear_session(refresh_token)
 
-    def __find_and_check_user_by_user_id(self, user_id: int | None) -> UserDto:
+    def __find_and_check_user_by_user_id(self, user_id: int | None) -> UserDataDto:
         if user_id is None:
             raise UnauthorizedException()
 

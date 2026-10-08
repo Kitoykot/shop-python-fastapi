@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class CartItemForOrderDto:
+class CartItemForOrderDataDto:
     id: int
     cart_id: int
     count: int

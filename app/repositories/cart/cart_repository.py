@@ -2,12 +2,12 @@ from sqlalchemy import delete, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session, selectinload
 
-from app.dto.cart.cart_for_order_dto import CartForOrderDto
-from app.dto.cart.cart_item_for_order_dto import CartItemForOrderDto
-from app.dto.cart.data.cart_data_dto import CartDataDto
-from app.dto.cart.data.cart_item_data_dto import CartItemDataDto
-from app.dto.cart.update_cart_item_dto import UpdateCartItemDto
-from app.dto.product.product_dto import ProductDto
+from app.dto.cart.read.data.cart_data_dto import CartDataDto
+from app.dto.cart.read.data.cart_for_order_data_dto import CartForOrderDataDto
+from app.dto.cart.read.data.cart_item_data_dto import CartItemDataDto
+from app.dto.cart.read.data.cart_item_for_order_data_dto import CartItemForOrderDataDto
+from app.dto.cart.update.update_cart_item_dto import UpdateCartItemDto
+from app.dto.product.read.data.product_data_dto import ProductDataDto
 from app.models.cart.cart import Cart
 from app.models.cart.cart_item import CartItem
 from app.models.product.product import Product
@@ -74,7 +74,7 @@ class CartRepository:
         statement = delete(CartItem).where(CartItem.cart_id == cart_id)
         self.session.execute(statement)
 
-    def get_cart_for_order(self, user_id: int) -> CartForOrderDto | None:
+    def get_cart_for_order(self, user_id: int) -> CartForOrderDataDto | None:
         cart = self.session.scalar(select(Cart).where(Cart.user_id == user_id))
 
         if cart is None:
@@ -121,8 +121,8 @@ class CartRepository:
             ],
         )
 
-    def __to_product_dto(self, product: Product) -> ProductDto:
-        return ProductDto(
+    def __to_product_dto(self, product: Product) -> ProductDataDto:
+        return ProductDataDto(
             id=product.id,
             name=product.name,
             description=product.description,
@@ -132,15 +132,15 @@ class CartRepository:
             is_available=product.is_available,
         )
 
-    def __to_order_dto(self, cart: Cart, items: list[CartItem]) -> CartForOrderDto:
-        return CartForOrderDto(
+    def __to_order_dto(self, cart: Cart, items: list[CartItem]) -> CartForOrderDataDto:
+        return CartForOrderDataDto(
             id=cart.id,
             user_id=cart.user_id,
             items=[self.__to_cart_item_for_order_dto(item) for item in items],
         )
 
-    def __to_cart_item_for_order_dto(self, item: CartItem) -> CartItemForOrderDto:
-        return CartItemForOrderDto(
+    def __to_cart_item_for_order_dto(self, item: CartItem) -> CartItemForOrderDataDto:
+        return CartItemForOrderDataDto(
             id=item.id,
             cart_id=item.cart_id,
             count=item.count,

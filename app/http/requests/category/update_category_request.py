@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app.dto.category.update_category_dto import UpdateCategoryDto
+from app.dto.category.update.update_category_dto import UpdateCategoryDto
 
 
 class UpdateCategoryRequest(BaseModel):

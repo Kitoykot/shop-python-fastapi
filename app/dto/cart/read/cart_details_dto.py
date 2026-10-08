@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from app.dto.cart.cart_dto import CartDto
-from app.dto.cart.cart_item_dto import CartItemDto
+from app.dto.cart.read.cart_dto import CartDto
+from app.dto.cart.read.cart_item_dto import CartItemDto
 
 
 @dataclass

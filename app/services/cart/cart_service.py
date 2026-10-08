@@ -1,11 +1,11 @@
 from decimal import Decimal
 
-from app.dto.cart.cart_details_dto import CartDetailsDto
-from app.dto.cart.cart_dto import CartDto
-from app.dto.cart.cart_item_dto import CartItemDto
-from app.dto.cart.data.cart_data_dto import CartDataDto
-from app.dto.cart.data.cart_item_data_dto import CartItemDataDto
-from app.dto.cart.update_cart_item_dto import UpdateCartItemDto
+from app.dto.cart.read.cart_details_dto import CartDetailsDto
+from app.dto.cart.read.cart_dto import CartDto
+from app.dto.cart.read.cart_item_dto import CartItemDto
+from app.dto.cart.read.data.cart_data_dto import CartDataDto
+from app.dto.cart.read.data.cart_item_data_dto import CartItemDataDto
+from app.dto.cart.update.update_cart_item_dto import UpdateCartItemDto
 from app.exceptions.product.product_not_found_exception import ProductNotFoundException
 from app.repositories.cart.cart_repository import CartRepository
 from app.repositories.product.product_repository import ProductRepository

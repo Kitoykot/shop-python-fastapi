@@ -1,20 +1,16 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from app.dto.order.order_item_dto import OrderItemDto
-from app.enums.order.order_status import OrderStatus
+from app.dto.order.create.create_order_item_dto import CreateOrderItemDto
 
 
 @dataclass
-class OrderDto:
-    id: int
+class OrderCreateDataDto:
     user_id: int
-    status: OrderStatus
     user_name: str
     user_phone_number: str
     user_email: str | None
     user_city: str
     user_address: str
     total_price: Decimal
-    created_at: str
-    items: list[OrderItemDto]
+    items: list[CreateOrderItemDto]

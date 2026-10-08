@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.dto.cart.update_cart_item_dto import UpdateCartItemDto
+from app.dto.cart.update.update_cart_item_dto import UpdateCartItemDto
 from app.models.cart.cart import Cart
 from app.models.cart.cart_item import CartItem
 from app.models.product.product import Product

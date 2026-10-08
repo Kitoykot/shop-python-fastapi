@@ -2,9 +2,9 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from app.dto.category.category_dto import CategoryDto
-from app.dto.category.create_category_dto import CreateCategoryDto
-from app.dto.category.update_category_dto import UpdateCategoryDto
+from app.dto.category.create.create_category_dto import CreateCategoryDto
+from app.dto.category.read.data.category_data_dto import CategoryDataDto
+from app.dto.category.update.update_category_dto import UpdateCategoryDto
 from app.models.category.category import Category
 from app.models.category.category_products import category_products
 from app.models.product.product import Product
@@ -14,13 +14,13 @@ class CategoryRepository:
     def __init__(self, session: Session):
         self.session = session
 
-    def get_active_categories(self) -> list[CategoryDto]:
+    def get_active_categories(self) -> list[CategoryDataDto]:
         statement = select(Category).where(Category.products.any(Product.active()))
         categories = list(self.session.scalars(statement).all())
 
         return [self.__to_dto(category) for category in categories]
 
-    def get_category_details(self, id: int) -> CategoryDto | None:
+    def get_category_details(self, id: int) -> CategoryDataDto | None:
         statement = select(Category).where(Category.id == id)
 
         category = self.session.scalars(statement).first()
@@ -65,8 +65,8 @@ class CategoryRepository:
         self.session.execute(statement)
         self.session.commit()
 
-    def __to_dto(self, category: Category) -> CategoryDto:
-        return CategoryDto(
+    def __to_dto(self, category: Category) -> CategoryDataDto:
+        return CategoryDataDto(
             id=category.id,
             name=category.name,
         )

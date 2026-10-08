@@ -2,8 +2,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from app.dto.auth.user_create_dto import UserCreateDto
-from app.dto.auth.user_register_dto import UserRegisterDto
+from app.dto.auth.register.user_create_dto import UserCreateDto
+from app.dto.auth.register.user_register_dto import UserRegisterDto
 from app.exceptions.auth.email_is_already_exists_exception import EmailIsAlreadyExists
 from app.exceptions.auth.phone_is_already_exists_exception import (
     PhoneNumberIsAlreadyExists,

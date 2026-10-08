@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app.dto.category.create_category_dto import CreateCategoryDto
+from app.dto.category.create.create_category_dto import CreateCategoryDto
 
 
 class CreateCategoryRequest(BaseModel):

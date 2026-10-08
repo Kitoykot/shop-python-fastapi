@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.dependencies.auth.current_user_dependency import get_current_user
 from app.dependencies.cart.cart_dependencies import get_cart_service
-from app.dto.user.user_dto import UserDto
+from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.http.requests.cart.cart_item.update_cart_item_request import (
     UpdateCartItemRequest,
 )
@@ -21,7 +21,7 @@ router = APIRouter(prefix='/cart')
 
 @router.get('')
 def cart(
-    user: UserDto = Depends(get_current_user),
+    user: UserDataDto = Depends(get_current_user),
     service: CartService = Depends(get_cart_service),
 ) -> CartDetailsResponse:
 
@@ -33,7 +33,7 @@ def cart(
 @router.post('/items')
 def update_items(
     request: UpdateCartItemRequest,
-    user: UserDto = Depends(get_current_user),
+    user: UserDataDto = Depends(get_current_user),
     service: CartService = Depends(get_cart_service),
 ) -> CartItemUpdatedResponse:
     service.update_cart_item(user_id=user.id, dto=request.to_dto())
@@ -47,7 +47,7 @@ def update_items(
 @router.delete('/items/{item_id}')
 def delete_item(
     item_id: int,
-    user: UserDto = Depends(get_current_user),
+    user: UserDataDto = Depends(get_current_user),
     service: CartService = Depends(get_cart_service),
 ) -> CartItemDeletedResponse:
     service.delete_cart_item(item_id=item_id, user_id=user.id)
@@ -60,7 +60,7 @@ def delete_item(
 
 @router.delete('/items')
 def clear_cart(
-    user: UserDto = Depends(get_current_user),
+    user: UserDataDto = Depends(get_current_user),
     service: CartService = Depends(get_cart_service),
 ) -> CartClearedResponse:
     service.clear_cart(user.id)

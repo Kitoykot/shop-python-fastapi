@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.dependencies.auth.current_user_dependency import get_current_user
 from app.dependencies.db.db_dependency import get_db
-from app.dto.user.user_dto import UserDto
+from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.main import app
 from app.models.user.user import User
 
@@ -26,15 +26,17 @@ def override_db(db_session: Session) -> Generator[None, None, None]:
 
 
 @pytest.fixture
-def authorized_user(override_db: None, user: User) -> Generator[UserDto, None, None]:
+def authorized_user(
+    override_db: None, user: User
+) -> Generator[UserDataDto, None, None]:
     previous_overrides = app.dependency_overrides.copy()
-    current_user = UserDto(
+    current_user = UserDataDto(
         id=user.id,
         password_hash=user.password_hash,
         is_active=user.is_active,
     )
 
-    def override_get_current_user() -> UserDto:
+    def override_get_current_user() -> UserDataDto:
         return current_user
 
     app.dependency_overrides[get_current_user] = override_get_current_user
