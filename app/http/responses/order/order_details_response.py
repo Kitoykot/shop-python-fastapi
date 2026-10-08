@@ -1,15 +1,15 @@
 from pydantic import BaseModel
 
-from app.dto.order.read.order_status_dto import OrderStatusDto
 from app.http.responses.order.order_item_details_response import (
     OrderItemDetailsResponse,
 )
+from app.http.responses.order.order_status_response import OrderStatusResponse
 from app.http.responses.types import Price
 
 
 class OrderDetailsResponse(BaseModel):
     id: int
-    status: OrderStatusDto
+    status: OrderStatusResponse
     user_name: str
     user_phone_number: str
     user_email: str | None
