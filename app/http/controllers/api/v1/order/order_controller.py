@@ -8,6 +8,7 @@ from app.dependencies.order.order_dependencies import (
 from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.http.requests.order.create_order_request import CreateOrderRequest
 from app.http.responses.order.order_created_response import OrderCreatedResponse
+from app.http.responses.order.order_details_response import OrderDetailsResponse
 from app.http.responses.order.order_list_response import OrderListResponse
 from app.services.order.create_order_service import CreateOrderService
 from app.services.order.get_order_service import GetOrderService
@@ -44,5 +45,17 @@ def order_list(
 
     return OrderListResponse.model_validate(
         {'orders': orders, 'pagination': pagination},
+        from_attributes=True,
+    )
+
+
+@router.get('/{order_id}')
+def order_details(
+    order_id: int,
+    user: UserDataDto = Depends(get_current_user),
+    service: GetOrderService = Depends(get_getting_order_service),
+) -> OrderDetailsResponse:
+    return OrderDetailsResponse.model_validate(
+        service.get_order_details(order_id=order_id, user_id=user.id),
         from_attributes=True,
     )

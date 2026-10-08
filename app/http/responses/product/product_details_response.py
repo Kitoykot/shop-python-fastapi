@@ -1,15 +1,11 @@
-from decimal import Decimal
+from pydantic import BaseModel
 
-from pydantic import BaseModel, field_serializer
+from app.http.responses.types import Price
 
 
 class ProductDetailsResponse(BaseModel):
     id: int
     name: str
     description: str | None = None
-    price: Decimal
+    price: Price
     is_available: bool
-
-    @field_serializer('price', when_used='json')
-    def serialize_price(self, value: Decimal) -> float:
-        return float(value)

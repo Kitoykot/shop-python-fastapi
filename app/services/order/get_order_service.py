@@ -1,9 +1,11 @@
 import math
 
 from app.dto.order.read.data.order_data_dto import OrderDataDto
+from app.dto.order.read.order_details_dto import OrderDetailsDto
 from app.dto.order.read.order_list_dto import OrderListDto
 from app.dto.order.read.order_status_dto import OrderStatusDto
 from app.dto.pagination.pagination_dto import PaginationDto
+from app.exceptions.order.order_not_found_exception import OrderNotFoundException
 from app.repositories.order.order_repository import OrderRepository
 
 
@@ -43,11 +45,33 @@ class GetOrderService:
 
         return (order_list, pagination)
 
+    def get_order_details(self, order_id: int, user_id: int) -> OrderDetailsDto:
+        order = self.repository.get_order_details(order_id=order_id, user_id=user_id)
+
+        if order is None:
+            raise OrderNotFoundException()
+
+        return self.__to_details_dto(order)
+
     def __to_list_dto(self, order: OrderDataDto) -> OrderListDto:
         return OrderListDto(
             id=order.id,
             positions_count=len(order.items),
             status=OrderStatusDto(code=order.status.value, label=order.status.label),
+            total_price=order.total_price,
+            created_at=order.created_at,
+            items=order.items,
+        )
+
+    def __to_details_dto(self, order: OrderDataDto) -> OrderDetailsDto:
+        return OrderDetailsDto(
+            id=order.id,
+            status=OrderStatusDto(code=order.status.value, label=order.status.label),
+            user_name=order.user_name,
+            user_phone_number=order.user_phone_number,
+            user_email=order.user_email,
+            user_city=order.user_city,
+            user_address=order.user_address,
             total_price=order.total_price,
             created_at=order.created_at,
             items=order.items,

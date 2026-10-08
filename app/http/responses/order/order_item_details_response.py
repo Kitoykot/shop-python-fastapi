@@ -3,7 +3,9 @@ from pydantic import BaseModel
 from app.http.responses.types import Price
 
 
-class ProductListResponse(BaseModel):
+class OrderItemDetailsResponse(BaseModel):
     id: int
-    name: str
+    product_id: int
+    product_name: str
     price: Price
+    count: int

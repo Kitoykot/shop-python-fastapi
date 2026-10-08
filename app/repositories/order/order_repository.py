@@ -34,6 +34,19 @@ class OrderRepository:
         orders = self.session.scalars(statement).all()
         return [self.__to_dto(order) for order in orders]
 
+    def get_order_details(self, order_id: int, user_id: int) -> OrderDataDto | None:
+        order = self.session.scalar(
+            select(Order)
+            .where(Order.id == order_id)
+            .where(Order.user_id == user_id)
+            .options(selectinload(Order.items))
+        )
+
+        if order is None:
+            return None
+
+        return self.__to_dto(order)
+
     def count_user_orders(self, user_id: int) -> int:
         statement = (
             select(func.count()).select_from(Order).where(Order.user_id == user_id)
