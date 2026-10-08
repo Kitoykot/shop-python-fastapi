@@ -2,14 +2,17 @@ from fastapi import APIRouter, Depends, Query, status
 
 from app.dependencies.auth.current_user_dependency import get_current_user
 from app.dependencies.order.order_dependencies import (
+    get_cancel_order_service,
     get_create_order_service,
     get_getting_order_service,
 )
 from app.dto.user.read.data.user_data_dto import UserDataDto
 from app.http.requests.order.create_order_request import CreateOrderRequest
+from app.http.responses.order.order_cancelled_response import OrderCancelledResponse
 from app.http.responses.order.order_created_response import OrderCreatedResponse
 from app.http.responses.order.order_details_response import OrderDetailsResponse
 from app.http.responses.order.order_list_response import OrderListResponse
+from app.services.order.cancel_order_service import CancelOrderService
 from app.services.order.create_order_service import CreateOrderService
 from app.services.order.get_order_service import GetOrderService
 
@@ -58,4 +61,18 @@ def order_details(
     return OrderDetailsResponse.model_validate(
         service.get_order_details(order_id=order_id, user_id=user.id),
         from_attributes=True,
+    )
+
+
+@router.post('/{order_id}/cancel')
+def cancel_order(
+    order_id: int,
+    user: UserDataDto = Depends(get_current_user),
+    service: CancelOrderService = Depends(get_cancel_order_service),
+) -> OrderCancelledResponse:
+    service.cancel_order_by_user(order_id=order_id, user_id=user.id)
+
+    return OrderCancelledResponse(
+        code=status.HTTP_200_OK,
+        message='Заказ успешно отменен',
     )
