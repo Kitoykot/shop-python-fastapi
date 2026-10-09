@@ -15,5 +15,6 @@ class OrderDetailsDto:
     user_city: str
     user_address: str
     total_price: Decimal
+    can_be_paid: bool
     created_at: str
     items: list[OrderItemDataDto]

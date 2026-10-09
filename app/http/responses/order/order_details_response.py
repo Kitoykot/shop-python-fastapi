@@ -16,5 +16,6 @@ class OrderDetailsResponse(BaseModel):
     user_city: str
     user_address: str
     total_price: Price
+    can_be_paid: bool
     created_at: str
     items: list[OrderItemDetailsResponse]

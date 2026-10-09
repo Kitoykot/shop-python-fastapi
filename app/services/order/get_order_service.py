@@ -5,6 +5,7 @@ from app.dto.order.read.order_details_dto import OrderDetailsDto
 from app.dto.order.read.order_list_dto import OrderListDto
 from app.dto.order.read.order_status_dto import OrderStatusDto
 from app.dto.pagination.pagination_dto import PaginationDto
+from app.enums.order.order_status import OrderStatus
 from app.exceptions.order.order_not_found_exception import OrderNotFoundException
 from app.repositories.order.order_repository import OrderRepository
 
@@ -73,6 +74,7 @@ class GetOrderService:
             user_city=order.user_city,
             user_address=order.user_address,
             total_price=order.total_price,
+            can_be_paid=order.status == OrderStatus.NEW,
             created_at=order.created_at,
             items=order.items,
         )
