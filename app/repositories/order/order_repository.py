@@ -63,6 +63,24 @@ class OrderRepository:
 
         return self.__to_dto(order)
 
+    def get_order_details_for_payment(
+        self, order_id: int, user_id: int
+    ) -> OrderDataDto | None:
+        order = self.session.scalar(
+            select(Order)
+            .where(
+                Order.id == order_id,
+                Order.user_id == user_id,
+            )
+            .options(selectinload(Order.items))
+            .with_for_update()
+        )
+
+        if order is None:
+            return None
+
+        return self.__to_dto(order)
+
     def get_order_details_for_cancelling(
         self, order_id: int, user_id: int
     ) -> OrderDataDto | None:
@@ -87,6 +105,11 @@ class OrderRepository:
         )
 
         return self.session.scalar(statement)
+
+    def mark_paid_during_transaction(self, order_id: int) -> None:
+        self.session.execute(
+            update(Order).where(Order.id == order_id).values(status=OrderStatus.PAID)
+        )
 
     def create_order_during_transaction(self, dto: OrderCreateDataDto) -> None:
         order = Order(

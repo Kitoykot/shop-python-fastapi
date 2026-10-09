@@ -6,6 +6,7 @@ from app.http.controllers.api.v1.category.category_controller import (
     router as categories,
 )
 from app.http.controllers.api.v1.order.order_controller import router as orders
+from app.http.controllers.api.v1.payment.payment_controller import router as payments
 from app.http.controllers.api.v1.product.product_controller import router as products
 
 router = APIRouter(prefix='/api/v1')
@@ -15,3 +16,4 @@ router.include_router(products)
 router.include_router(categories)
 router.include_router(cart)
 router.include_router(orders)
+router.include_router(payments)
