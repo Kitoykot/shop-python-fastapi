@@ -15,14 +15,17 @@ services:
       - '127.0.0.1:8001:8000'
     depends_on:
       postgres:
-        condition:
-          service_healthy
+        condition: service_healthy
       redis:
-        condition:
-          service_healthy
+        condition: service_healthy
       migrations-app:
-        condition:
-          service_completed_successfully
+        condition: service_completed_successfully
+      queue:
+        condition: service_started
+      scheduler:
+        condition: service_started
+      mailpit:
+        condition: service_started
     volumes:
       - ./app:/app/app
       - ./config:/app/config
@@ -135,6 +138,30 @@ services:
     volumes:
       - ./app:/app/app
       - ./config:/app/config
+
+  queue:
+    build: .
+    environment:
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      SMTP_FROM: shop@example.test
+    command: rq worker --url redis://redis:6379/0 notifications
+    restart: unless-stopped
+    depends_on:
+      redis:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    volumes:
+      - ./app:/app/app
+      - ./config:/app/config
+  
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:8025:8025'
+      - '127.0.0.1:1025:1025'
 
 volumes:
   postgres-data:

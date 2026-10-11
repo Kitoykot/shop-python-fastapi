@@ -1,5 +1,7 @@
 from datetime import UTC, datetime
 
+from rq import Queue
+
 from app.database.unit_of_work import UnitOfWork
 from app.dto.order.read.data.order_data_dto import OrderDataDto
 from app.dto.payment.read.data.payment_data_dto import PaymentDataDto
@@ -12,6 +14,7 @@ from app.exceptions.payment.payment_cannot_be_confirmed_exception import (
     PaymentCannotBeConfirmedException,
 )
 from app.exceptions.payment.payment_not_found_exception import PaymentNotFoundException
+from app.jobs.order.order_paid_job import notify_order_paid
 from app.repositories.order.order_repository import OrderRepository
 from app.repositories.payment.payment_repository import PaymentRepository
 
@@ -22,10 +25,12 @@ class ConfirmPaymentService:
         repository: PaymentRepository,
         order_repository: OrderRepository,
         unit_of_work: UnitOfWork,
+        queue: Queue,
     ):
         self.repository = repository
         self.order_repository = order_repository
         self.unit_of_work = unit_of_work
+        self.queue = queue
 
     def confirm_payment(self, payment_id: int, user_id: int) -> None:
         with self.unit_of_work:
@@ -52,6 +57,11 @@ class ConfirmPaymentService:
                 payment_id=payment.id, paid_at=datetime.now(UTC)
             )
             self.order_repository.mark_paid_during_transaction(order.id)
+
+        if not order.user_email:
+            return
+
+        self.queue.enqueue(notify_order_paid, order=order)
 
     def __check_payment(self, payment: PaymentDataDto, order: OrderDataDto) -> bool:
         if payment.status == PaymentStatus.SUCCEEDED:
