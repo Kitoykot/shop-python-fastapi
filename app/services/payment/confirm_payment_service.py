@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from rq import Queue
+from rq import Queue, Retry
 
 from app.database.unit_of_work import UnitOfWork
 from app.dto.order.read.data.order_data_dto import OrderDataDto
@@ -61,7 +61,9 @@ class ConfirmPaymentService:
         if not order.user_email:
             return
 
-        self.queue.enqueue(notify_order_paid, order=order)
+        self.queue.enqueue(
+            notify_order_paid, order=order, retry=Retry(max=3, interval=[10, 30, 60])
+        )
 
     def __check_payment(self, payment: PaymentDataDto, order: OrderDataDto) -> bool:
         if payment.status == PaymentStatus.SUCCEEDED:

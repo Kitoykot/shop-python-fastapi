@@ -145,7 +145,7 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: 1025
       SMTP_FROM: shop@example.test
-    command: rq worker --url redis://redis:6379/0 notifications
+    command: rq worker --url redis://redis:6379/0 --with-scheduler notifications
     restart: unless-stopped
     depends_on:
       redis:
