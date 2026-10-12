@@ -4,6 +4,7 @@ import pytest
 
 from app.dto.auth.tokens.token_info_dto import TokenInfoDto
 from app.dto.user.read.data.user_data_dto import UserDataDto
+from app.enums.user.user_role import UserRole
 from app.exceptions.auth.unauthorized_exception import UnauthorizedException
 from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
 from app.repositories.auth.session_repository import SessionRepository
@@ -57,6 +58,7 @@ class TestRefreshSession:
             id=1,
             password_hash='password-hash',
             is_active=False,
+            role=UserRole.USER,
         )
 
         with pytest.raises(UserIsNotActiveException):
@@ -75,6 +77,7 @@ class TestRefreshSession:
             id=1,
             password_hash='password-hash',
             is_active=True,
+            role=UserRole.USER,
         )
         self.session_repository.refresh_session.return_value = None
 
@@ -96,6 +99,7 @@ class TestRefreshSession:
             id=1,
             password_hash='password-hash',
             is_active=True,
+            role=UserRole.USER,
         )
         self.session_repository.refresh_session.return_value = TokenInfoDto(
             access_token='new-acces-token',

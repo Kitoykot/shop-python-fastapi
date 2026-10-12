@@ -3,6 +3,7 @@ from unittest.mock import Mock
 import pytest
 
 from app.dto.user.read.data.user_data_dto import UserDataDto
+from app.enums.user.user_role import UserRole
 from app.exceptions.auth.unauthorized_exception import UnauthorizedException
 from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
 from app.repositories.auth.session_repository import SessionRepository
@@ -53,6 +54,7 @@ class TestFindUserByAccess:
             id=1,
             password_hash='password-hash',
             is_active=False,
+            role=UserRole.USER,
         )
 
         with pytest.raises(UserIsNotActiveException):
@@ -69,6 +71,7 @@ class TestFindUserByAccess:
             id=1,
             password_hash='password-hash',
             is_active=True,
+            role=UserRole.USER,
         )
 
         result = self.service.find_user_by_access_token('access-token')

@@ -34,6 +34,7 @@ def authorized_user(
         id=user.id,
         password_hash=user.password_hash,
         is_active=user.is_active,
+        role=user.role,
     )
 
     def override_get_current_user() -> UserDataDto:

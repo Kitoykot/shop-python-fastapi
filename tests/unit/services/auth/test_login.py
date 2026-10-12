@@ -5,6 +5,7 @@ import pytest
 from app.dto.auth.login.user_login_dto import UserLoginDto
 from app.dto.auth.tokens.token_info_dto import TokenInfoDto
 from app.dto.user.read.data.user_data_dto import UserDataDto
+from app.enums.user.user_role import UserRole
 from app.exceptions.auth.user_is_not_active_exception import UserIsNotActiveException
 from app.exceptions.auth.wrong_email_or_password_exception import (
     WrongEmailOrPasswordException,
@@ -45,6 +46,7 @@ class TestLogin:
             id=1,
             password_hash='password_hash',
             is_active=True,
+            role=UserRole.USER,
         )
 
         self.user_repository.find_user_by_email.return_value = user_dto
@@ -67,6 +69,7 @@ class TestLogin:
             id=1,
             password_hash='password_hash',
             is_active=False,
+            role=UserRole.USER,
         )
 
         self.user_repository.find_user_by_email.return_value = user_dto
@@ -89,6 +92,7 @@ class TestLogin:
             id=1,
             password_hash='password_hash',
             is_active=True,
+            role=UserRole.USER,
         )
 
         self.user_repository.find_user_by_email.return_value = user_dto
