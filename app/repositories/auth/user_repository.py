@@ -56,5 +56,8 @@ class UserRepository:
 
     def __to_dto(self, user: User) -> UserDataDto:
         return UserDataDto(
-            id=user.id, password_hash=user.password_hash, is_active=user.is_active
+            id=user.id,
+            password_hash=user.password_hash,
+            is_active=user.is_active,
+            role=user.role,
         )
