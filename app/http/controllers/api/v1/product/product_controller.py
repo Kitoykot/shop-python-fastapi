@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
+from app.dependencies.auth.admin_dependency import get_admin
 from app.dependencies.product.product_dependencies import get_product_service
 from app.http.requests.product.create_product_request import CreateProductRequest
 from app.http.requests.product.update_product_request import UpdateProductRequest
@@ -33,7 +34,7 @@ def product_by_id(
     return ProductDetailsResponse.model_validate(product, from_attributes=True)
 
 
-@router.post('', status_code=status.HTTP_201_CREATED)
+@router.post('', status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_admin)])
 def create(
     request: CreateProductRequest,
     service: ProductService = Depends(get_product_service),
@@ -46,7 +47,7 @@ def create(
     )
 
 
-@router.patch('/{id}')
+@router.patch('/{id}', dependencies=[Depends(get_admin)])
 def update(
     id: int,
     request: UpdateProductRequest,
@@ -57,7 +58,7 @@ def update(
     return ProductUpdatedResponse(message='Товар обновлен')
 
 
-@router.delete('/{id}')
+@router.delete('/{id}', dependencies=[Depends(get_admin)])
 def delete(
     id: int, service: ProductService = Depends(get_product_service)
 ) -> ProductDeletedResponse:
